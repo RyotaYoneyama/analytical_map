@@ -9,6 +9,7 @@ import sys
 import io
 import matplotlib.pyplot as plt
 import copy
+import cv2
 
 
 class COCOevalDet(COCO):
@@ -25,6 +26,8 @@ class COCOevalDet(COCO):
         self.type = ['Match', 'LC', 'DC', 'Cls', 'Loc', 'Bkg', 'Miss']
         self.type_order = {'Match': 0, 'LC': 1, 'DC': 1,
                            'Cls': 2, 'Loc': 3, 'Bkg': 4, 'Miss': 4, None: 5}
+        self.type_color = {'Match': (10, 20, 190), 'LC': (100, 20, 190), 'DC': (30, 140, 140),
+                           'Cls': (190, 20, 100), 'Loc': (190, 30, 30), 'Bkg': (50, 50, 50), 'Miss': (80, 20, 170)}
         self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
         self.results = {'precision': [], 'recall': [], 'ap': []}
         self.is_evaluated = False
@@ -33,6 +36,8 @@ class COCOevalDet(COCO):
         self.recall_inter = np.arange(0, 1.01, 0.1)
         self.iou_thresh = 0.5
         self.iou_loc = 0.2
+        self.area_rng = [[0, 10000000000.0], [0, 1024],
+                         [1024, 9216], [9216, 10000000000.0]]
 
     def init_dirs(self):
 
@@ -205,11 +210,18 @@ class COCOevalDet(COCO):
         return iou
 
     def precision_analyze(self):
-        cat_id_list = [id for id in self.cocoDt.getCatIds()]
-        cat_id_list.append(self.cocoDt.getCatIds())
-        for cat_id in cat_id_list:
 
-            dt_ids = self.cocoDt.getAnnIds(catIds=cat_id)
+        if self.eval == False:
+            print('Evaluation should be done first.')
+            return False
+        cat_list = [id for id in self.cocoDt.getCatIds()]
+        cat_list.append(self.cocoDt.getCatIds())
+        category_names = [
+            self.cats[cat-1]['name'] if not isinstance(cat, list) else 'all' for cat in cat_list]
+
+        for id_cat, cat in enumerate(cat_list):
+
+            dt_ids = self.cocoDt.getAnnIds(catIds=cat)
             dts = self.cocoDt.loadAnns(ids=dt_ids)
             counts = {'Match': 0, 'Loc': 0, 'DC': 0, 'LC': 0,
                       'Cls': 0, 'Bkg': 0, 'Miss': 0}
@@ -220,10 +232,6 @@ class COCOevalDet(COCO):
                     [dt for dt in dts if dt['eval']['type'] == t])
                 counts[t] = _count
 
-            if isinstance(cat_id, list):
-                catetroy_name = 'all'
-            else:
-                catetroy_name = self.cats[cat_id-1]['name']
             precision = round(counts['Match'] / num_dts, 3)
 
             error_ratio = {}
@@ -231,7 +239,7 @@ class COCOevalDet(COCO):
                 if k != 'Match':
                     error_ratio[k] = round(v / num_dts, 3)
             self.results['precision'].append({
-                'category': catetroy_name, 'score': precision, 'error': error_ratio})
+                'category': category_names[id_cat], 'score': precision, 'error': error_ratio})
 
             dir_fig_precision = os.path.join(
                 self.result_dir, 'figures', 'precision')
@@ -243,18 +251,28 @@ class COCOevalDet(COCO):
             counts_k = _counts[:, 0]
 
             fig_pie, ax_pie = plt.subplots()
-            ax_pie.set_title(catetroy_name + "_precision_ratio")
+            ax_pie.set_title(category_names[id_cat] + "_precision_ratio")
             ax_pie.pie(counts_v, labels=counts_k, autopct="%1.1f %%")
             fig_pie.savefig(os.path.join(dir_fig_precision,
-                                         catetroy_name + "_precision_ratio.png"))
+                                         category_names[id_cat] + "_precision_ratio.png"))
+
+        return True
 
     def recall_analyze(self):
-        cat_id_list = [id for id in self.cocoGt.getCatIds()]
-        cat_id_list.append(self.cocoGt.getCatIds())
 
-        for cat_id in cat_id_list:
+        if self.eval == False:
+            print('Evaluation should be done first.')
+            return False
 
-            gt_ids = self.cocoGt.getAnnIds(catIds=cat_id)
+        cat_list = [id for id in self.cocoGt.getCatIds()]
+        cat_list.append(self.cocoGt.getCatIds())
+
+        category_names = [
+            self.cats[cat-1]['name'] if not isinstance(cat, list) else 'all' for cat in cat_list]
+
+        for id_cat, cat in enumerate(cat_list):
+
+            gt_ids = self.cocoGt.getAnnIds(catIds=cat)
             gts = self.cocoGt.loadAnns(ids=gt_ids)
             counts = {'Match': 0, 'Loc': 0, 'DC': 0, 'LC': 0,
                       'Cls': 0, 'Bkg': 0, 'Miss': 0}
@@ -265,11 +283,6 @@ class COCOevalDet(COCO):
                     [gt for gt in gts if gt['eval']['type'] == t])
                 counts[t] = _count
 
-            if isinstance(cat_id, list):
-                catetroy_name = 'all'
-            else:
-                catetroy_name = self.cats[cat_id-1]['name']
-
             recall = round(counts['Match'] / num_gts, 3)
 
             error_ratio = {}
@@ -278,7 +291,7 @@ class COCOevalDet(COCO):
                     error_ratio[k] = round(v / num_gts, 3)
 
             self.results['recall'].append({
-                'category': catetroy_name, 'score': recall, 'error': error_ratio})
+                'category': category_names[id_cat], 'score': recall, 'error': error_ratio})
 
             dir_fig_recall = os.path.join(self.result_dir, 'figures', 'recall')
             os.makedirs(dir_fig_recall, exist_ok=True)
@@ -288,21 +301,33 @@ class COCOevalDet(COCO):
             counts_v = _counts[:, 1]
             counts_k = _counts[:, 0]
             fig_pie, ax_pie = plt.subplots()
-            ax_pie.set_title(catetroy_name + "_recall_ratio")
+            ax_pie.set_title(category_names[id_cat] + "_recall_ratio")
             ax_pie.pie(counts_v, labels=counts_k, autopct="%1.1f %%")
             fig_pie.savefig(os.path.join(
-                dir_fig_recall, catetroy_name + "_recall_ratio.png"))
+                dir_fig_recall, category_names[id_cat] + "_recall_ratio.png"))
+
+        return True
 
     def ap_analyze(self):
 
+        if self.eval == False:
+            print('Evaluation should be done first.')
+            return False
+
         def calc_ap(gts, dts, recall_inter):
             num_gts = len(gts)
+
             inds = np.argsort([-d['score'] for d in dts], kind='mergesort')
             dts = [dts[i] for i in inds]
 
             x_conf = np.zeros(len(dts))
             y_pres = np.zeros(len(dts))
             y_recall = np.zeros(len(dts))
+            y_pres_inter = np.zeros(recall_inter.shape)
+
+            if num_gts == 0:
+                return x_conf, y_pres, y_recall, y_pres_inter
+
             count_TP = 0
             for id, dt in enumerate(dts):
                 if dt['eval']['count'] == 'TP':
@@ -314,7 +339,6 @@ class COCOevalDet(COCO):
             _y_pres = np.concatenate([[1], y_pres, [0]])
             _y_recall = np.concatenate([[0], y_recall, [1]])
 
-            y_pres_inter = np.zeros(recall_inter.shape)
             ids = np.searchsorted(_y_recall, recall_inter, side='left')
             for i, id in enumerate(ids):
                 y_pres_inter[i] = _y_pres[id]
@@ -322,80 +346,150 @@ class COCOevalDet(COCO):
 
             return x_conf, y_pres, y_recall, y_pres_inter
 
-        cat_id_list = [id for id in self.cocoGt.getCatIds()]
-        cat_id_list.append(self.cocoGt.getCatIds())
-        for cat_id in cat_id_list:
+        cat_list = [id for id in self.cocoGt.getCatIds()]
+        cat_list.append(self.cocoGt.getCatIds())
 
-            if isinstance(cat_id, list):
-                catetroy_name = 'all'
-            else:
-                catetroy_name = self.cats[cat_id-1]['name']
+        category_names = [
+            self.cats[cat-1]['name'] if not isinstance(cat, list) else 'all' for cat in cat_list]
+        area_names = ['area_' + str(area[0]) + '_' + str(area[1]) if area != [0, 10000000000.0]
+                      else 'all' for id_area, area in enumerate(self.area_rng)]
 
-            dt_ids = self.cocoDt.getAnnIds(catIds=cat_id)
-            gt_ids = self.cocoGt.getAnnIds(catIds=cat_id)
-            dts = self.cocoDt.loadAnns(ids=dt_ids)
-            gts = self.cocoGt.loadAnns(ids=gt_ids)
-            ap = dict.fromkeys(self.type, 0)
-            for t in self.type:
-                _dts = copy.deepcopy(dts)
-                _gts = copy.deepcopy(gts)
-                if t != 'Match':
+        for id_cat, cat in enumerate(cat_list):
 
-                    for gt in _gts:
-                        if gt['eval']['type'] == t:
-                            gt['eval']['count'] = 'TP'
+            for id_area, area in enumerate(self.area_rng):
 
-                    for dt in _dts:
-                        if dt['eval']['type'] == t:
-                            dt['eval']['count'] = 'TP'
+                dt_ids = self.cocoDt.getAnnIds(catIds=cat, areaRng=area)
+                gt_ids = self.cocoGt.getAnnIds(catIds=cat, areaRng=area)
+                dts = self.cocoDt.loadAnns(ids=dt_ids)
+                gts = self.cocoGt.loadAnns(ids=gt_ids)
 
-                x_conf, y_pres, y_recall, y_pres_inter = calc_ap(
-                    _gts, _dts, self.recall_inter)
+                ap = dict.fromkeys(self.type, 0)
 
-                for i in range(1, len(y_pres_inter)):
-                    ap[t] += y_pres_inter[i]*(self.recall_inter[i] -
-                                              self.recall_inter[i-1])
+                for t in self.type:
+                    _dts = copy.deepcopy(dts)
+                    _gts = copy.deepcopy(gts)
+                    if t != 'Match':
+                        for gt in _gts:
+                            if gt['eval']['type'] == t:
+                                gt['eval']['count'] = 'TP'
 
-            error_ratio = {}
-            for k in self.type:
-                if k != 'Match':
-                    error_ratio[k] = round(ap[k] - ap['Match'], 3)
+                        for dt in _dts:
+                            if dt['eval']['type'] == t:
+                                dt['eval']['count'] = 'TP'
 
-            self.results['ap'].append({
-                'category': catetroy_name, 'score': round(ap['Match'], 3), 'error': error_ratio})
+                    x_conf, y_pres, y_recall, y_pres_inter = calc_ap(
+                        _gts, _dts, self.recall_inter)
 
-            dir_fig_ap = os.path.join(
-                self.result_dir, 'figures', 'ap', catetroy_name)
-            os.makedirs(dir_fig_ap, exist_ok=True)
+                    for i in range(1, len(y_pres_inter)):
+                        ap[t] += y_pres_inter[i]*(self.recall_inter[i] -
+                                                  self.recall_inter[i-1])
 
-            fig_conf, ax_conf = plt.subplots()
-            ax_conf.plot(x_conf, y_pres, color='red')
-            ax_conf.plot(x_conf, y_recall, color='green')
-            ax_conf.set_xlim(-0.05, 1.05)
-            ax_conf.set_ylim(-0.05, 1.05)
-            ax_conf.legend(["Precision", "Recall"])
-            ax_conf.set_xlabel('confidence')
-            fig_conf.savefig(os.path.join(dir_fig_ap,  "pr_conf.png"))
+                error_ratio = {}
+                for k in self.type:
+                    if k != 'Match':
+                        error_ratio[k] = round(ap[k] - ap['Match'], 3)
 
-            fig_pr, ax_pr = plt.subplots()
+                self.results['ap'].append({
+                    'category': category_names[id_cat], 'area': area_names[id_area], 'score': round(ap['Match'], 3), 'error': error_ratio})
 
-            ax_pr.plot(y_recall, y_pres, marker='.', color='royalblue')
-            ax_pr.plot(self.recall_inter, y_pres_inter,
-                       marker='x', linewidth=0, color='orange')
-            ax_pr.set_xlabel('Precision')
-            ax_pr.set_xlabel('Recall')
-            ax_pr.legend(["PR_raw", "PR_inter"])
-            ax_pr.set_xlim(-0.05, 1.05)
-            ax_pr.set_ylim(-0.05, 1.05)
-            fig_pr.savefig(os.path.join(dir_fig_ap,  "pr_curve.png"))
+                dir_fig_ap = os.path.join(
+                    self.result_dir, 'figures', 'ap', category_names[id_cat], area_names[id_area])
+                os.makedirs(dir_fig_ap, exist_ok=True)
 
-        mAP = np.round(sum([ap['score'] for ap in self.results['ap']
-                            if ap['category'] != 'all'])/len(self.cats), 3)
+                fig_conf, ax_conf = plt.subplots()
+                ax_conf.plot(x_conf, y_pres, color='red')
+                ax_conf.plot(x_conf, y_recall, color='green')
+                ax_conf.set_xlim(-0.05, 1.05)
+                ax_conf.set_ylim(-0.05, 1.05)
+                ax_conf.legend(["Precision", "Recall"])
+                ax_conf.set_xlabel('confidence')
+                fig_conf.savefig(os.path.join(dir_fig_ap,  "pr_conf.png"))
+
+                fig_pr, ax_pr = plt.subplots()
+
+                ax_pr.plot(y_recall, y_pres, marker='.', color='royalblue')
+                ax_pr.plot(self.recall_inter, y_pres_inter,
+                           marker='x', linewidth=0, color='orange')
+                ax_pr.set_xlabel('Precision')
+                ax_pr.set_xlabel('Recall')
+                ax_pr.legend(["PR_raw", "PR_inter"])
+                ax_pr.set_xlim(-0.05, 1.05)
+                ax_pr.set_ylim(-0.05, 1.05)
+                fig_pr.savefig(os.path.join(dir_fig_ap,  "pr_curve.png"))
+
+            mAP = np.round(sum([ap['score'] for ap in self.results['ap']
+                                if ap['category'] != 'all' and ap['area'] == 'all'])/len(self.cats), 3)
 
         self.results['ap'].append({
             'map': mAP})
+        return True
 
-    def dump_middle_file(self, output_file):
+    def visualize(self):
+        if self.eval == False:
+            print('Evaluation should be done first.')
+            return False
+
+        dir_TP = os.path.join(self.result_dir, 'visualize', 'TP')
+        dir_not_TP = os.path.join(self.result_dir, 'visualize', 'not_TP')
+        os.makedirs(dir_TP, exist_ok=True)
+        os.makedirs(dir_not_TP, exist_ok=True)
+
+        img_ids = self.cocoGt.getImgIds()
+        for img_id in img_ids:
+            img = self.cocoGt.loadImgs(ids=img_id)[0]
+
+            img_cv2 = cv2.imread(os.path.join(
+                self.image_dir, img["file_name"]))
+            gts_ids = self.cocoGt.getAnnIds(imgIds=img['id'],  iscrowd=None)
+            dts_ids = self.cocoDt.getAnnIds(imgIds=img['id'],  iscrowd=None)
+
+            gts_per_img = self.cocoGt.loadAnns(gts_ids)
+            dts_per_img = self.cocoDt.loadAnns(dts_ids)
+
+            is_all_TPs = True
+            for gt in gts_per_img:
+
+                if gt['eval']['count'] != 'TP':
+                    is_all_TPs = False
+
+                x_min = int(gt["bbox"][0])
+                y_min = int(gt["bbox"][1])
+                x_max = int(gt["bbox"][0]) + int(gt["bbox"][2])
+                y_max = int(gt["bbox"][1]) + int(gt["bbox"][3])
+
+                cv2.rectangle(img_cv2, (x_min, y_min),
+                              (x_max, y_max), self.type_color[gt['eval']['type']], thickness=2)
+                cv2.putText(img_cv2, str(gt['eval']['type']),
+                            org=(x_min, y_min-5),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale=0.5,
+                            color=self.type_color[gt['eval']['type']],
+                            thickness=2,
+                            lineType=cv2.LINE_4)
+
+            for dt in dts_per_img:
+                if dt['eval']['count'] != 'TP':
+                    is_all_TPs = False
+
+                x_min = int(dt["bbox"][0])
+                y_min = int(dt["bbox"][1])
+                x_max = int(dt["bbox"][0]) + int(dt["bbox"][2])
+                y_max = int(dt["bbox"][1]) + int(dt["bbox"][3])
+
+                cv2.rectangle(img_cv2, (x_min, y_min), (x_max, y_max), tuple(
+                    [1.3*c for c in self.type_color[dt['eval']['type']]]))
+                cv2.putText(img_cv2,  str(dt['eval']['type']),
+                            org=(x_min, y_min-5),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale=0.5,
+                            color=self.type_color[dt['eval']['type']],
+                            thickness=1,
+                            lineType=cv2.LINE_4)
+
+            save_dir = dir_TP if is_all_TPs else dir_not_TP
+            cv2.imwrite(os.path.join(save_dir, img["file_name"]), img_cv2)
+
+    def dump_middle_results_json(self):
 
         def images(cocoGt):
             img_ids = cocoGt.getImgIds()
@@ -429,12 +523,12 @@ class COCOevalDet(COCO):
             # save it
             js[query_list[i]] = tmp
         # write
-        fw = open(output_file, 'w')
+        fw = open(os.path.join(self.result_dir, 'middle_results.json'), 'w')
         json.dump(js, fw, indent=2)
 
-    def dump_final_results(self, output_file):
+    def dump_final_results_json(self):
 
-        fw = open(output_file, 'w')
+        fw = open(os.path.join(self.result_dir, 'final_results.json'), 'w')
         json.dump([self.results], fw, indent=2)
 
 
@@ -450,11 +544,7 @@ if __name__ == '__main__':
     cocoEvalDet.eval()
     cocoEvalDet.precision_analyze()
     cocoEvalDet.recall_analyze()
-    start = time.time()
     cocoEvalDet.ap_analyze()
-    elapsed_time = time.time() - start
-    print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
-    cocoEvalDet.dump_middle_file(os.path.join(
-        path_to_coco_dir, 'middle_results.json'))
-    cocoEvalDet.dump_final_results(os.path.join(
-        path_to_coco_dir, 'final_results.json'))
+    cocoEvalDet.visualize()
+    cocoEvalDet.dump_middle_results_json()
+    cocoEvalDet.dump_final_results_json()

@@ -16,7 +16,7 @@
     "category_id": 1,
     "segmentation": [],
     "area": 45914.4567,
-    "bbox": [0.0, 11.78, 222.81, 206.07],
+    "bbox": [20.0, 10.78, 222.81, 206.07],
     "score": 0.8,
     "iscrowd": 0,
     "attributes": { "occluded": false, "rotation": 0.0 }
@@ -27,7 +27,7 @@
     "category_id": 1,
     "segmentation": [],
     "area": 32356.286400000005,
-    "bbox": [73.6, 22.4, 207.12, 156.22],
+    "bbox": [43.6, 32.4, 207.12, 156.22],
     "score": 0.5,
     "iscrowd": 0,
     "attributes": { "occluded": false, "rotation": 0.0 }
@@ -38,7 +38,7 @@
     "category_id": 1,
     "segmentation": [],
     "area": 26401.8762,
-    "bbox": [30.11, 56.51, 216.09, 122.18],
+    "bbox": [20.11, 60.51, 216.09, 122.18],
     "score": 0.6,
     "iscrowd": 0,
     "attributes": { "occluded": false, "rotation": 0.0 }
@@ -71,7 +71,7 @@
     "category_id": 2,
     "segmentation": [],
     "area": 11160.6,
-    "bbox": [186.0, 70.1, 114.0, 97.9],
+    "bbox": [176.0, 64.1, 114.0, 97.9],
     "score": 0.2,
     "iscrowd": 0,
     "attributes": { "occluded": false, "rotation": 0.0 }
@@ -93,7 +93,7 @@
     "category_id": 1,
     "segmentation": [],
     "area": 18026.859500000002,
-    "bbox": [1.73, 45.41, 147.05, 122.59],
+    "bbox": [11.73, 35.41, 147.05, 122.59],
     "score": 0.8,
     "iscrowd": 0,
     "attributes": { "occluded": false, "rotation": 0.0 }
@@ -104,7 +104,7 @@
     "category_id": 2,
     "segmentation": [],
     "area": 35660.531200000005,
-    "bbox": [84.32, 2.66, 215.68, 165.34],
+    "bbox": [74.32, 7.66, 215.68, 165.34],
     "score": 0.9,
     "iscrowd": 0,
     "attributes": { "occluded": false, "rotation": 0.0 }
