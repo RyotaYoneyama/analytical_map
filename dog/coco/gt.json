@@ -1,0 +1,139 @@
+{
+  "licenses": [{ "name": "", "id": 0, "url": "" }],
+  "info": {
+    "contributor": "",
+    "date_created": "",
+    "description": "",
+    "url": "",
+    "version": "",
+    "year": ""
+  },
+  "categories": [
+    { "id": 1, "name": "dog", "supercategory": "" },
+    { "id": 2, "name": "person", "supercategory": "" }
+  ],
+  "images": [
+    {
+      "id": 1,
+      "width": 225,
+      "height": 225,
+      "file_name": "dog1.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 2,
+      "width": 282,
+      "height": 179,
+      "file_name": "dog2.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 3,
+      "width": 266,
+      "height": 190,
+      "file_name": "dog3.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 4,
+      "width": 259,
+      "height": 194,
+      "file_name": "dog4.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 5,
+      "width": 300,
+      "height": 168,
+      "file_name": "dog5.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    }
+  ],
+  "annotations": [
+    {
+      "id": 1,
+      "image_id": 1,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 45914.4567,
+      "bbox": [0.0, 11.78, 222.81, 206.07],
+      "iscrowd": 0,
+      "attributes": { "occluded": false, "rotation": 0.0 }
+    },
+    {
+      "id": 2,
+      "image_id": 2,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 32356.286400000005,
+      "bbox": [73.6, 22.4, 207.12, 156.22],
+      "iscrowd": 0,
+      "attributes": { "occluded": false, "rotation": 0.0 }
+    },
+    {
+      "id": 3,
+      "image_id": 3,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 14524.7584,
+      "bbox": [30.1, 56.51, 118.88, 122.18],
+      "iscrowd": 0,
+      "attributes": { "occluded": false, "rotation": 0.0 }
+    },
+    {
+      "id": 4,
+      "image_id": 3,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 11628.9162,
+      "bbox": [150.34, 50.08, 90.42, 128.61],
+      "iscrowd": 0,
+      "attributes": { "occluded": false, "rotation": 0.0 }
+    },
+    {
+      "id": 5,
+      "image_id": 5,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 18026.859500000002,
+      "bbox": [1.73, 45.41, 147.05, 122.59],
+      "iscrowd": 0,
+      "attributes": { "occluded": false, "rotation": 0.0 }
+    },
+    {
+      "id": 6,
+      "image_id": 5,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 10816.08,
+      "bbox": [187.8, 71.6, 112.2, 96.4],
+      "iscrowd": 0,
+      "attributes": { "occluded": false, "rotation": 0.0 }
+    },
+    {
+      "id": 7,
+      "image_id": 5,
+      "category_id": 2,
+      "segmentation": [],
+      "area": 35660.531200000005,
+      "bbox": [84.32, 2.66, 215.68, 165.34],
+      "iscrowd": 0,
+      "attributes": { "occluded": false, "rotation": 0.0 }
+    }
+  ]
+}
