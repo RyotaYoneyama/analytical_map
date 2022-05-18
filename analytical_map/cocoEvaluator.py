@@ -12,6 +12,8 @@ import cv2
 from typing import Tuple
 from params import cocoParams
 from dataclasses import asdict
+import copy
+
 
 class COCOEvaluator(COCO):
     def __init__(self, cocoGt_file, cocoDt_file, result_dir, image_dir, params: cocoParams):
@@ -38,7 +40,6 @@ class COCOEvaluator(COCO):
         # User variables
         self.iou_thresh = params.iou_thresh
         self.iou_loc = params.iou_loc
-
 
     def init_dirs(self, image_dir: str, result_dir: str) -> bool:
         """Initialize directories
@@ -312,9 +313,10 @@ class COCOEvaluator(COCO):
             return cocoDt.loadAnns(ids=annIds)
 
         def param2dict(params):
-            params.recall_inter = params.recall_inter.tolist()
-            tmp = [asdict(params)]
-            params.recall_inter = np.array(params.recall_inter)
+            _params = copy.deepcopy(params)
+            _params.recall_inter = _params.recall_inter.tolist()
+            _params.area_rng = _params.area_rng.tolist()
+            tmp = [asdict(_params)]
             return tmp
 
         query_list = ["licenses", "info", "categories", "images",

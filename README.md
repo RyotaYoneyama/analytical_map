@@ -34,7 +34,7 @@ docker run --rm -it --privileged --net=host --ipc=host \
 ### Evaluate every images and crate a middle file.
 Count all TPs, FPs, FNs and categorize them followings:
 - TPs->'Match', 
-- FPs->'DC (Double Count)', 'Cls (Class mistake)', 'Bkg (Background)'
+- FPs->'DC (Double Count)', 'Cls (Class mistake)', 'Loc(Location)', 'Bkg (Background)'
 - FNs-> 'LC (Less Count)', 'Miss'
 
 ```

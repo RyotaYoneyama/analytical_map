@@ -12,10 +12,11 @@ import cv2
 from typing import Tuple
 from params import cocoParams
 from dataclasses import asdict
+import copy
 
 
 class COCOAnalizer(COCO):
-    def __init__(self, middle_file, result_dir, params:cocoParams):
+    def __init__(self, middle_file, result_dir, params: cocoParams):
         super().__init__()
 
         self.cocoGt, self.cocoDt = self.init_coco(middle_file)
@@ -273,9 +274,10 @@ class COCOAnalizer(COCO):
             return cocoGt.loadCats(cocoGt.getCatIds())
 
         def param2dict(params):
-            params.recall_inter = params.recall_inter.tolist()
-            tmp = [asdict(params)]
-            params.recall_inter = np.array(params.recall_inter)
+            _params = copy.deepcopy(params)
+            _params.recall_inter = _params.recall_inter.tolist()
+            _params.area_rng = _params.area_rng.tolist()
+            tmp = [asdict(_params)]
             return tmp
 
         query_list = ["licenses", "info", "categories", "params",
@@ -290,7 +292,6 @@ class COCOAnalizer(COCO):
             if query_list[i] == "results":
                 tmp = [self.results]
 
-
             js[query_list[i]] = tmp
 
         fw = open(os.path.join(self.result_dir, 'final_results.json'), 'w')
@@ -302,7 +303,8 @@ if __name__ == '__main__':
     path_to_result_dir = "../sample_results/"
     path_to_middle_file = os.path.join(path_to_result_dir, 'middle_file.json')
 
-    p = cocoParams(recall_inter=np.arange(0, 1.01, 0.1), area_rng=[[0, 1024], [1024, 9216], [9216, 10000000000.0]])
+    p = cocoParams(recall_inter=np.arange(0, 1.01, 0.1), area_rng=np.array([
+                   [0, 1024], [1024, 9216], [9216, 10000000000.0]]))
     cocoAnal = COCOAnalizer(path_to_middle_file, path_to_result_dir, p)
     cocoAnal.precision_analyze()
     cocoAnal.recall_analyze()
