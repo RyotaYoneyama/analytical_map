@@ -69,7 +69,7 @@ python3 analytical_map/main.py COCO_GT_FILE_PATH COCO_DT_FILE_PATH RESULT_DIR IM
 ```
 For example,
 ```
-python3 analytical_map/main.py sample_data/coco/gt.json sample_data/coco/dt.json sample_results sample_data/coco/images/
+python3 analytical_map/main.py sample_data/coco/gt.json sample_data/coco/dt.json sample_results sample_data/images/
 ```
 
 ## Use flow chart
