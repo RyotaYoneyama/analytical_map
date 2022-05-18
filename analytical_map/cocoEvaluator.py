@@ -10,10 +10,11 @@ import matplotlib.pyplot as plt
 import copy
 import cv2
 from typing import Tuple
-
+from params import cocoParams
+from dataclasses import asdict
 
 class COCOEvaluator(COCO):
-    def __init__(self, cocoGt_file, cocoDt_file, result_dir, image_dir):
+    def __init__(self, cocoGt_file, cocoDt_file, result_dir, image_dir, params: cocoParams):
         super().__init__()
 
         # Input
@@ -28,14 +29,16 @@ class COCOEvaluator(COCO):
         self.type = ['Match', 'LC', 'DC', 'Cls', 'Loc', 'Bkg', 'Miss']
         self.type_order = {'Match': 0, 'LC': 1, 'DC': 1,
                            'Cls': 2, 'Loc': 3, 'Bkg': 4, 'Miss': 4, None: 5}
-        self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
-        self.is_evaluated = False
-
-        # User variables
-        self.iou_thresh = 0.5
-        self.iou_loc = 0.2
         self.type_color = {'Match': (10, 20, 190), 'LC': (100, 20, 190), 'DC': (30, 140, 140),
                            'Cls': (190, 20, 100), 'Loc': (190, 30, 30), 'Bkg': (50, 50, 50), 'Miss': (80, 20, 170)}
+        self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
+        self.is_evaluated = False
+        self.params = params
+
+        # User variables
+        self.iou_thresh = params.iou_thresh
+        self.iou_loc = params.iou_loc
+
 
     def init_dirs(self, image_dir: str, result_dir: str) -> bool:
         """Initialize directories
@@ -308,8 +311,14 @@ class COCOEvaluator(COCO):
             annIds = cocoDt.getAnnIds()
             return cocoDt.loadAnns(ids=annIds)
 
+        def param2dict(params):
+            params.recall_inter = params.recall_inter.tolist()
+            tmp = [asdict(params)]
+            params.recall_inter = np.array(params.recall_inter)
+            return tmp
+
         query_list = ["licenses", "info", "categories", "images",
-                      "annotations", "detections", "segment_info"]
+                      "annotations", "detections", "params", "segment_info"]
         js = cl.OrderedDict()
         for i in range(len(query_list)):
             tmp = ""
@@ -321,7 +330,8 @@ class COCOEvaluator(COCO):
                 tmp = annotations(self.cocoGt)
             if query_list[i] == "detections":
                 tmp = detections(self.cocoDt)
-
+            if query_list[i] == "params":
+                tmp = param2dict(self.params)
             # save it
             js[query_list[i]] = tmp
         # write
@@ -338,8 +348,9 @@ if __name__ == '__main__':
     path_to_dt = os.path.join(path_to_coco_dir, 'coco', 'dt.json')
     path_to_image_dir = os.path.join(path_to_coco_dir, 'images')
 
+    p = cocoParams(iou_thresh=0.5, iou_loc=0.2)
     cocoEval = COCOEvaluator(path_to_gt, path_to_dt,
-                             path_to_result_dir, path_to_image_dir)
+                             path_to_result_dir, path_to_image_dir, p)
     cocoEval.eval()
     cocoEval.visualize()
     middle_file_path = cocoEval.dump_middle_file_json()

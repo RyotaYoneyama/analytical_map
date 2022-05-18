@@ -10,10 +10,12 @@ import matplotlib.pyplot as plt
 import copy
 import cv2
 from typing import Tuple
+from params import cocoParams
+from dataclasses import asdict
 
 
 class COCOAnalizer(COCO):
-    def __init__(self, middle_file, result_dir):
+    def __init__(self, middle_file, result_dir, params:cocoParams):
         super().__init__()
 
         self.cocoGt, self.cocoDt = self.init_coco(middle_file)
@@ -23,18 +25,14 @@ class COCOAnalizer(COCO):
 
         # Default variables
         self.type = ['Match', 'LC', 'DC', 'Cls', 'Loc', 'Bkg', 'Miss']
-        self.type_color = {'Match': (10, 20, 190), 'LC': (100, 20, 190), 'DC': (30, 140, 140),
-                           'Cls': (190, 20, 100), 'Loc': (190, 30, 30), 'Bkg': (50, 50, 50), 'Miss': (80, 20, 170)}
         self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
         self.results = {'precision': [], 'recall': [], 'ap': []}
         self.area_all = [0, 10000000000.0]
 
         # User variables
-        self.recall_inter = np.arange(0, 1.01, 0.1)
-        self.iou_thresh = 0.5
-        self.iou_loc = 0.2
-        self.area_rng = [self.area_all, [0, 1024],
-                         [1024, 9216], [9216, 10000000000.0]]
+        self.params = params
+        self.recall_inter = params.recall_inter
+        self.area_rng = np.insert(params.area_rng, 0, self.area_all, axis=0)
 
     def init_coco(self, middle_file: str) -> Tuple[COCO, COCO]:
         """_summary_
@@ -196,8 +194,8 @@ class COCOAnalizer(COCO):
 
         category_names = [
             self.cats[cat-1]['name'] if not isinstance(cat, list) else 'all' for cat in cat_list]
-        area_names = ['area_' + str(area[0]) + '_' + str(area[1]) if area != self.area_all
-                      else 'area_all' for id_area, area in enumerate(self.area_rng)]
+        area_names = ['area_' + str(area[0]) + '_' + str(area[1]) if not np.all(area == self.area_all)
+                      else 'area_all' for area in self.area_rng]
 
         for id_cat, cat in enumerate(cat_list):
 
@@ -271,9 +269,32 @@ class COCOAnalizer(COCO):
                 fig_pie.savefig(os.path.join(dir_fig_ap, "ap_ratio.png"))
 
     def dump_final_results_json(self):
+        def categories(cocoGt):
+            return cocoGt.loadCats(cocoGt.getCatIds())
+
+        def param2dict(params):
+            params.recall_inter = params.recall_inter.tolist()
+            tmp = [asdict(params)]
+            params.recall_inter = np.array(params.recall_inter)
+            return tmp
+
+        query_list = ["licenses", "info", "categories", "params",
+                      "results"]
+        js = cl.OrderedDict()
+        for i in range(len(query_list)):
+            tmp = ""
+            if query_list[i] == "categories":
+                tmp = categories(self.cocoGt)
+            if query_list[i] == "params":
+                tmp = param2dict(self.params)
+            if query_list[i] == "results":
+                tmp = [self.results]
+
+
+            js[query_list[i]] = tmp
 
         fw = open(os.path.join(self.result_dir, 'final_results.json'), 'w')
-        json.dump([self.results], fw, indent=2)
+        json.dump(js, fw, indent=2)
 
 
 if __name__ == '__main__':
@@ -281,7 +302,8 @@ if __name__ == '__main__':
     path_to_result_dir = "../sample_results/"
     path_to_middle_file = os.path.join(path_to_result_dir, 'middle_file.json')
 
-    cocoAnal = COCOAnalizer(path_to_middle_file, path_to_result_dir)
+    p = cocoParams(recall_inter=np.arange(0, 1.01, 0.1), area_rng=[[0, 1024], [1024, 9216], [9216, 10000000000.0]])
+    cocoAnal = COCOAnalizer(path_to_middle_file, path_to_result_dir, p)
     cocoAnal.precision_analyze()
     cocoAnal.recall_analyze()
     cocoAnal.ap_analyze()

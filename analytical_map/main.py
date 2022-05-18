@@ -3,7 +3,8 @@ import os
 from cocoEvaluator import COCOEvaluator
 from cocoAnalizer import COCOAnalizer
 import argparse
-
+from params import cocoParams
+import numpy as np
 
 def get_arguments():
     parser = argparse.ArgumentParser(
@@ -18,14 +19,14 @@ def get_arguments():
     return args
 
 
-def eval_and_analyze(gt_path, dt_path, result_dir, image_dir):
+def eval_and_analyze(gt_path, dt_path, result_dir, image_dir, params:cocoParams):
     cocoEval = COCOEvaluator(gt_path, dt_path,
-                             result_dir, image_dir)
+                             result_dir, image_dir, params)
     cocoEval.eval()
     cocoEval.visualize()
     middle_file_path = cocoEval.dump_middle_file_json()
 
-    cocoAnal = COCOAnalizer(middle_file_path, result_dir)
+    cocoAnal = COCOAnalizer(middle_file_path, result_dir, params)
     cocoAnal.precision_analyze()
     cocoAnal.recall_analyze()
     cocoAnal.ap_analyze()
@@ -34,7 +35,10 @@ def eval_and_analyze(gt_path, dt_path, result_dir, image_dir):
 
 def main():
     args = get_arguments()
-    eval_and_analyze(args.gt, args.dt, args.result_dir, args.image_dir)
+    p = cocoParams(iou_thresh=0.5, iou_loc=0.2, recall_inter=np.arange(0, 1.01, 0.1), area_rng=[[0, 1024], [1024, 9216], [9216, 10000000000.0]])
+    # p = cocoParams(iou_thresh=0.5, iou_loc=0.2, recall_inter=np.arange(0, 1.01, 0.1), area_rng=[])
+
+    eval_and_analyze(args.gt, args.dt, args.result_dir, args.image_dir, p)
 
 
 if __name__ == '__main__':

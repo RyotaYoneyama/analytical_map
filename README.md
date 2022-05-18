@@ -64,4 +64,7 @@ python3 analytical_map/main.py sample_data/coco/gt.json sample_data/coco/dt.json
 ## Use flow chart
 ![Use flow chart](doc/figures/use_flow.drawio.png)
 
+## Details
+
 ## Project status
+In progress
