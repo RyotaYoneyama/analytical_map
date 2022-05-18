@@ -1,9 +1,20 @@
 # analytical_map
 
+<<<<<<< HEAD
+Calculate mAP in respect to bounding box size and error causes. 
+=======
 Calculate mAP in respect to categories, boounding box size.
+>>>>>>> dcab9a57819093a5c4a8aa4aedd2bea641933cf0
 
 
+<<<<<<< HEAD
+## Add your files
+
+- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
+- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+=======
 ## Requirements
+>>>>>>> dcab9a57819093a5c4a8aa4aedd2bea641933cf0
 
 ## Preparation
 - Clone
