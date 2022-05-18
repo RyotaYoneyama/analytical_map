@@ -2,7 +2,6 @@ import time
 import json
 import collections as cl
 from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
 import numpy as np
 import os
 import sys
