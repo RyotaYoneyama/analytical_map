@@ -28,9 +28,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-add-repository universe
 RUN apt-get update && apt-get install -y python3-pip python build-essential && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN /usr/bin/yes | pip3 install --upgrade pip
-RUN /usr/bin/yes | pip3 install --upgrade virtualenv
-RUN /usr/bin/yes | pip3 install --upgrade paramiko
-RUN /usr/bin/yes | pip3 install --ignore-installed --upgrade numpy protobuf
+    RUN /usr/bin/yes | pip3 install --upgrade paramiko
 RUN /usr/bin/yes | pip3 install --upgrade setuptools
 
 # Locale

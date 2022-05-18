@@ -15,9 +15,10 @@ cd analytical_map
 - docker
 ```
 xhost+
+chmod +x docker/entrypoint.sh
 docker build -t analytical_map -f docker/Dockerfile .
 docker run --rm -it --privileged --net=host --ipc=host \
-    -v $PWD:/home/$(id -un)/hydra_mlflow_optuna_example/ \
+    -v $PWD:/home/$(id -un)/analytical_map/ \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -e DISPLAY=$DISPLAY \
     -v $HOME/.Xauthority:/home/$(id -un)/.Xauthority \
@@ -60,5 +61,7 @@ For example,
 python3 analytical_map/main.py sample_data/coco/gt.json sample_data/coco/dt.json sample_results sample_data/coco/images/
 ```
 
+## Use flow chart
+![Use flow chart](doc/figures/use_flow.drawio.png)
 
 ## Project status
