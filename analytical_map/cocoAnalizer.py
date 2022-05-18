@@ -224,10 +224,10 @@ class COCOAnalizer(COCO):
                     x_conf, y_pres, y_recall, y_pres_inter = calc_ap(
                         _gts, _dts, self.recall_inter)
 
-                    for i in range(1, len(y_pres_inter)):
-                        ap[t] += y_pres_inter[i]*(self.recall_inter[i] -
-                                                  self.recall_inter[i-1])
-
+                    # for i in range(1, len(y_pres_inter)):
+                    #     ap[t] += y_pres_inter[i]*(self.recall_inter[i] -
+                    #                               self.recall_inter[i-1])
+                    ap[t] = np.average(y_pres_inter)
                 ap_ratio = {k: v - ap['Match'] if k != 'Match' else ap['Match']
                             for k, v in ap.items()}
                 error_ratio = {k: v for k, v in ap_ratio.items()
