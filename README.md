@@ -1,20 +1,9 @@
 # analytical_map
 
-<<<<<<< HEAD
-Calculate mAP in respect to bounding box size and error causes. 
-=======
 Calculate mAP in respect to categories, boounding box size.
->>>>>>> dcab9a57819093a5c4a8aa4aedd2bea641933cf0
 
 
-<<<<<<< HEAD
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-=======
 ## Requirements
->>>>>>> dcab9a57819093a5c4a8aa4aedd2bea641933cf0
 
 ## Preparation
 - Clone
@@ -49,15 +38,13 @@ Count all TPs, FPs, FNs and categorize them followings:
 - FNs-> 'LC (Less Count)', 'Miss'
 
 ```
-cd analytical_map/analytical_map
-python3 cocoEvaluator.py
+python3 -m analytical_map.cocoEvaluator
 ```
 The above command will create the middle file named 'sample_results/middle_file.json' and visualization in 'sample_results/visualize'.
 
 ### Analyze the middle file and calculate AP, precision, and recall.
 ```
-cd analytical_map/analytical_map
-python3 cocoAnalizer.py
+python3 -m analytical_map.cocoAnalizer
 ```
 The above command will create the final results named 'sample_results/final_results.json' containing scores of AP, precision, and recall.
 The charts of those scores are dipicted in 'sample_results/'.
@@ -65,17 +52,19 @@ The charts of those scores are dipicted in 'sample_results/'.
 ### Evaluate & Analyze
 If you would like to execute the above two steps, you can run them by follwoings:
 ```
-python3 analytical_map/main.py COCO_GT_FILE_PATH COCO_DT_FILE_PATH RESULT_DIR IMAGE_DIR
+python3 -m analytical_map.main COCO_GT_FILE_PATH COCO_DT_FILE_PATH RESULT_DIR IMAGE_DIR
 ```
 For example,
 ```
-python3 analytical_map/main.py sample_data/coco/gt.json sample_data/coco/dt.json sample_results sample_data/images/
+python3 -m analytical_map.main sample_data/coco/gt.json sample_data/coco/dt.json sample_results sample_data/images/
 ```
 
 ## Use flow chart
-![Use flow chart](doc/figures/use_flow.drawio.png)
+![Use flow chart](docs/figures/use_flow.drawio.png)
 
 ## Details
+![docstring](docs/_build/index.html)
+
 
 ## Project status
 In progress

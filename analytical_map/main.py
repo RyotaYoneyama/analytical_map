@@ -1,10 +1,10 @@
 
-import os
-from cocoEvaluator import COCOEvaluator
-from cocoAnalizer import COCOAnalizer
 import argparse
-from params import cocoParams
 import numpy as np
+
+from analytical_map.cocoAnalizer import COCOAnalizer
+from analytical_map.cocoEvaluator import COCOEvaluator
+from analytical_map.params import cocoParams
 
 
 def get_arguments():

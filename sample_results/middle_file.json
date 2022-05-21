@@ -1,0 +1,524 @@
+{
+  "licenses": "",
+  "info": "",
+  "categories": [
+    {
+      "id": 1,
+      "name": "dog",
+      "supercategory": ""
+    },
+    {
+      "id": 2,
+      "name": "person",
+      "supercategory": ""
+    }
+  ],
+  "images": [
+    {
+      "id": 1,
+      "width": 225,
+      "height": 225,
+      "file_name": "dog1.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 2,
+      "width": 282,
+      "height": 179,
+      "file_name": "dog2.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 3,
+      "width": 266,
+      "height": 190,
+      "file_name": "dog3.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 4,
+      "width": 259,
+      "height": 194,
+      "file_name": "dog4.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    },
+    {
+      "id": 5,
+      "width": 300,
+      "height": 168,
+      "file_name": "dog5.jpg",
+      "license": 0,
+      "flickr_url": "",
+      "coco_url": "",
+      "date_captured": 0
+    }
+  ],
+  "annotations": [
+    {
+      "id": 1,
+      "image_id": 1,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 45914.4567,
+      "bbox": [
+        0.0,
+        11.78,
+        222.81,
+        206.07
+      ],
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 2,
+        "iou": 0.8285559732575001
+      }
+    },
+    {
+      "id": 2,
+      "image_id": 2,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 32356.286400000005,
+      "bbox": [
+        73.6,
+        22.4,
+        207.12,
+        156.22
+      ],
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 3,
+        "iou": 0.6686353535082173
+      }
+    },
+    {
+      "id": 3,
+      "image_id": 3,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 14524.7584,
+      "bbox": [
+        30.1,
+        56.51,
+        118.88,
+        122.18
+      ],
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 4,
+        "iou": 0.5248695346038224
+      }
+    },
+    {
+      "id": 4,
+      "image_id": 3,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 11628.9162,
+      "bbox": [
+        150.34,
+        50.08,
+        90.42,
+        128.61
+      ],
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "FN",
+        "type": "Loc",
+        "corr_id": 4,
+        "iou": 0.36659578186613945
+      }
+    },
+    {
+      "id": 5,
+      "image_id": 5,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 18026.859500000002,
+      "bbox": [
+        1.73,
+        45.41,
+        147.05,
+        122.59
+      ],
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 9,
+        "iou": 0.7497931937561431
+      }
+    },
+    {
+      "id": 6,
+      "image_id": 5,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 10816.08,
+      "bbox": [
+        187.8,
+        71.6,
+        112.2,
+        96.4
+      ],
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "FN",
+        "type": "Cls",
+        "corr_id": 7,
+        "iou": 0.7274387469440952
+      }
+    },
+    {
+      "id": 7,
+      "image_id": 5,
+      "category_id": 2,
+      "segmentation": [],
+      "area": 35660.531200000005,
+      "bbox": [
+        84.32,
+        2.66,
+        215.68,
+        165.34
+      ],
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 10,
+        "iou": 0.860772061665297
+      }
+    }
+  ],
+  "detections": [
+    {
+      "id": 1,
+      "image_id": 1,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 11290.0152,
+      "bbox": [
+        80.85,
+        13.46,
+        107.76,
+        104.77
+      ],
+      "score": 0.1,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "FP",
+        "type": "Loc",
+        "corr_id": 1,
+        "iou": 0.24821900622865103
+      }
+    },
+    {
+      "id": 2,
+      "image_id": 1,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 45914.4567,
+      "bbox": [
+        20.0,
+        10.78,
+        222.81,
+        206.07
+      ],
+      "score": 0.8,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 1,
+        "iou": 0.8285559732575001
+      }
+    },
+    {
+      "id": 3,
+      "image_id": 2,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 32356.2864,
+      "bbox": [
+        43.6,
+        32.4,
+        207.12,
+        156.22
+      ],
+      "score": 0.5,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 2,
+        "iou": 0.6686353535082173
+      }
+    },
+    {
+      "id": 4,
+      "image_id": 3,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 26401.876200000002,
+      "bbox": [
+        20.11,
+        60.51,
+        216.09,
+        122.18
+      ],
+      "score": 0.6,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 3,
+        "iou": 0.5248695346038224
+      }
+    },
+    {
+      "id": 5,
+      "image_id": 4,
+      "category_id": 2,
+      "segmentation": [],
+      "area": 6833.5044,
+      "bbox": [
+        48.71,
+        58.11,
+        81.39,
+        83.96
+      ],
+      "score": 0.4,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "FP",
+        "type": "Bkg",
+        "corr_id": null,
+        "iou": null
+      }
+    },
+    {
+      "id": 6,
+      "image_id": 4,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 2090.1687,
+      "bbox": [
+        187.4,
+        113.62,
+        39.79,
+        52.53
+      ],
+      "score": 0.2,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "FP",
+        "type": "Bkg",
+        "corr_id": null,
+        "iou": null
+      }
+    },
+    {
+      "id": 7,
+      "image_id": 5,
+      "category_id": 2,
+      "segmentation": [],
+      "area": 11160.6,
+      "bbox": [
+        176.0,
+        64.1,
+        114.0,
+        97.9
+      ],
+      "score": 0.2,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "FP",
+        "type": "Cls",
+        "corr_id": 6,
+        "iou": 0.7274387469440952
+      }
+    },
+    {
+      "id": 8,
+      "image_id": 5,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 16611.574399999998,
+      "bbox": [
+        4.01,
+        34.73,
+        139.64,
+        118.96
+      ],
+      "score": 0.7,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "FP",
+        "type": "DC",
+        "corr_id": 5,
+        "iou": 0.7762373930938893
+      }
+    },
+    {
+      "id": 9,
+      "image_id": 5,
+      "category_id": 1,
+      "segmentation": [],
+      "area": 18026.859500000002,
+      "bbox": [
+        11.73,
+        35.41,
+        147.05,
+        122.59
+      ],
+      "score": 0.8,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 5,
+        "iou": 0.7497931937561431
+      }
+    },
+    {
+      "id": 10,
+      "image_id": 5,
+      "category_id": 2,
+      "segmentation": [],
+      "area": 35660.531200000005,
+      "bbox": [
+        74.32,
+        7.66,
+        215.68,
+        165.34
+      ],
+      "score": 0.9,
+      "iscrowd": 0,
+      "attributes": {
+        "occluded": false,
+        "rotation": 0.0
+      },
+      "eval": {
+        "count": "TP",
+        "type": "Match",
+        "corr_id": 7,
+        "iou": 0.860772061665297
+      }
+    }
+  ],
+  "params": [
+    {
+      "iou_thresh": 0.5,
+      "iou_loc": 0.2,
+      "recall_inter": [
+        0.0,
+        0.1,
+        0.2,
+        0.30000000000000004,
+        0.4,
+        0.5,
+        0.6000000000000001,
+        0.7000000000000001,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "area_rng": [
+        [
+          0.0,
+          1024.0
+        ],
+        [
+          1024.0,
+          9216.0
+        ],
+        [
+          9216.0,
+          10000000000.0
+        ]
+      ]
+    }
+  ],
+  "segment_info": ""
+}

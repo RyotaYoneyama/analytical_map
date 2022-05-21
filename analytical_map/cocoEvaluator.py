@@ -10,17 +10,29 @@ import matplotlib.pyplot as plt
 import copy
 import cv2
 from typing import Tuple
-from params import cocoParams
 from dataclasses import asdict
 import copy
 
+from analytical_map.params import cocoParams
+
 
 class COCOEvaluator(COCO):
-    def __init__(self, cocoGt_file, cocoDt_file, result_dir, image_dir, params: cocoParams):
+    def __init__(self, cocoGt_file: str, cocoDt_file: str, result_dir: str, image_dir: str, params: cocoParams):
+        """init
+
+        Args:
+            cocoGt_file (str): COCO ground truth path
+            cocoDt_file (str): COCO detection file path
+            result_dir (str): Output path
+            image_dir (str): Input image path
+            params (cocoParams): Parameters for evalutation
+        """
         super().__init__()
 
         # Input
-        self.cocoGt, self.cocoDt = self.init_coco(
+        self.cocoGt = None
+        self.cocoDt = None
+        assert self.init_coco(
             cocoGt_file, cocoDt_file)
 
         self.image_dir = image_dir
@@ -61,14 +73,14 @@ class COCOEvaluator(COCO):
         return True
 
     def init_coco(self, cocoGt_file: str, cocoDt_file: str) -> Tuple[COCO, COCO]:
-        """_summary_
+        """Initialize coco data
 
         Args:
-            cocoGt_file (str): _description_
-            cocoDt_file (str): _description_
+            cocoGt_file (str): COCO ground truth path
+            cocoDt_file (str): COCO detection file path
 
         Returns:
-            COCO, COCO: _description_
+            COCO, COCO: COCO ground truth and detection instances.
         """
         if cocoGt_file is not None and cocoDt_file is not None:
             if os.path.isfile(cocoGt_file) and os.path.isfile(cocoDt_file):
@@ -81,12 +93,19 @@ class COCOEvaluator(COCO):
                 _dts = cocoDt.loadAnns(cocoDt.getAnnIds())
                 _ = [g.update(eval_dict) for g in _gts]
                 _ = [d.update(eval_dict) for d in _dts]
-                return cocoGt, cocoDt
+                self.cocoGt = cocoGt
+                self.cocoDt = cocoDt
+                return True
+            else:
+                print('ERROR:Could not read files')
+                return False
         else:
             print('ERROR:Could not read files')
             return False
 
     def eval(self):
+        """ Evaluate all images by repeating eval_per_img for all images.
+        """
         if self.is_evaluated == False:
             img_ids = self.cocoGt.getImgIds()
             for img_id in img_ids:
@@ -98,15 +117,28 @@ class COCOEvaluator(COCO):
         else:
             print("Already evaluated")
 
-    def eval_per_img(self, cocoGt: COCO, cocoDt: COCO, imgId: list, type_order: dict, iou_thresh: float, iou_loc: float):
+    def eval_per_img(self, cocoGt: COCO, cocoDt: COCO, imgId: list, type_order: dict, iou_thresh: float, iou_loc: float) -> bool:
+        """Evaluate bounding boxes in one image.
+
+        Args:
+            cocoGt (COCO): COCO ground truth instance
+            cocoDt (COCO): COCO detection instance
+            imgId (list): Image Id
+            type_order (dict): type_order
+            iou_thresh (float): Threshold for IoU
+            iou_loc (float): Threshold for IoU to define 'Localization(Loc)' error.
+
+        Returns:
+            bool: True if eval_per_img is done correctly.
+        """
 
         if type_order != {'Match': 0, 'LC': 1, 'DC': 1, 'Cls': 2, 'Loc': 3, 'Bkg': 4, 'Miss': 4, None: 5}:
             print('ERROR:Eval per image, type order', type_order)
             return False
 
+        # Load all gts and dts in the image.
         Id_gts = cocoGt.getAnnIds(imgIds=imgId, iscrowd=None)
         Id_dts = cocoDt.getAnnIds(imgIds=imgId, iscrowd=None)
-
         gts = cocoGt.loadAnns(Id_gts)
         dts = cocoDt.loadAnns(Id_dts)
 
@@ -124,45 +156,55 @@ class COCOEvaluator(COCO):
                 bb_gt = np.array(gt["bbox"])
                 bb_dts = np.array([dt["bbox"] for dt in dts])
 
+                # Calculate IoU of one gt and all dts in the image.
+                # iou : np.array(NUM_DTS)
                 iou = self.iou_per_single_gt(bb_gt, bb_dts)
 
-                TP_all_cat_boolean = iou > iou_thresh
-                TP_loc_all_cat_boolean = iou > iou_loc
+                # Match boolean for all categories.
+                Match_all_cat_boolean = iou > iou_thresh
+                # Match and Loc for all categories.
+                Match_loc_all_cat_boolean = iou > iou_loc
 
+                # Category match boolean. cat_match_boolean:np.array(NUM_DTS)
                 cat_gt = np.array(gt['category_id'])
                 cat_dts = np.array([dt['category_id'] for dt in dts])
                 cat_match_boolean = cat_dts == cat_gt
 
-                TP_boolean = np.logical_and(
-                    cat_match_boolean, TP_all_cat_boolean)
-                TP_loc_boolean = np.logical_and(
-                    cat_match_boolean, TP_loc_all_cat_boolean)
-                TP_cat_boolean = np.logical_and(
-                    TP_all_cat_boolean, np.logical_not(TP_boolean))
+                # Matched ids
+                Match_boolean = np.logical_and(
+                    cat_match_boolean, Match_all_cat_boolean)
 
-                # Count TP, double count and  less counts(LC)
-                id_dets_match = np.where(TP_boolean == True)[0]
+                # Only loc ids
+                Loc_boolean = np.logical_and(
+                    Match_loc_all_cat_boolean, cat_match_boolean, np.logical_not(Match_boolean))
+
+                # Only class ids
+                Cat_boolean = np.logical_and(
+                    Match_all_cat_boolean, np.logical_not(Match_boolean))
+
+                # Match, DC, FC
+                id_dets_match = np.where(Match_boolean == True)[0]
                 for id_det in id_dets_match:
                     dt = dts[id_det]
                     # TP if gt is not assinged and dt is not TP-
-                    if gt['eval']['count'] != "TP" and dt['eval']['count'] != "TP":
+                    if gt['eval']['type'] != "Match" and dt['eval']['type'] != "Match":
                         dt['eval'] = {"count": "TP", "type": "Match",
                                       "corr_id": gt['id'], 'iou': iou[id_det]}
                         gt['eval'] = {"count": "TP", "type": "Match",
                                       "corr_id": dt['id'], 'iou': iou[id_det]}
                         continue
                     # Double count if gt_assigned is assigned
-                    elif gt['eval']['count'] == "TP" and dt['eval']['count'] != "TP":
+                    elif gt['eval']['type'] == "Match" and dt['eval']['type'] != "Match":
                         dt['eval'] = {"count": "FP", "type": "DC",
                                       "corr_id": gt['id'], 'iou': iou[id_det]}
                     # Less count(LC) if all detections are already assigned
                     if id_det == id_dets_match[-1]:
-                        if gt['eval']['count'] != "TP" and dt['eval']['count'] == "TP":
+                        if gt['eval']['type'] != "Match" and dt['eval']['type'] == "Match":
                             gt['eval'] = {
                                 "count": "FN", "type": "LC", "corr_id": dts[id_dets_match[0]]['id'], 'iou': iou[id_det]}
 
-                # Count catgory mistakes
-                id_dets_all = np.where(TP_cat_boolean == True)[0]
+                # Cls
+                id_dets_all = np.where(Cat_boolean == True)[0]
                 for id_det in id_dets_all:
                     dt = dts[id_det]
                     if type_order[dt['eval']['type']] > type_order['Cls']:
@@ -172,8 +214,8 @@ class COCOEvaluator(COCO):
                         gt['eval'] = {"count": "FN", "type": "Cls",
                                       "corr_id": dt['id'], 'iou': iou[id_det]}
 
-                # Count location error
-                id_dets_loc = np.where(TP_loc_boolean == True)[0]
+                # Loc
+                id_dets_loc = np.where(Loc_boolean == True)[0]
                 for id_det in id_dets_loc:
                     dt = dts[id_det]
                     if type_order[dt['eval']['type']] > type_order['Loc']:
@@ -188,18 +230,19 @@ class COCOEvaluator(COCO):
                     gt['eval'] = {"count": "FN", "type": "Miss",
                                   "corr_id": None, 'iou': None}
 
-            # Count Bkg, if detections are not assigned yet
+            # Bkg, if detections are not assigned yet
             for dt in dts:
                 if type_order[dt['eval']['type']] > type_order[None]:
                     dt['eval'] = {"count": "FP", "type": "Bkg",
                                   "corr_id": None, 'iou': None}
 
         else:
+            # Miss if there are gts but no dts exist.
             if exist_gts and not exist_dts:
                 for gt in gts:
                     gt['eval'] = {"count": "FN", "type": "Miss",
                                   "corr_id": None, 'iou': None}
-
+            # Bkg, if dts exist but no gts exist.
             elif not exist_gts and exist_dts:
                 for dt in dts:
                     dt['eval'] = {"count": "FP", "type": "Bkg",
@@ -207,6 +250,15 @@ class COCOEvaluator(COCO):
         return True
 
     def iou_per_single_gt(self, gt_bb: np.array, dt_bbs: np.array) -> np.array:
+        """Calculate IoU between one gt and multiple dts.
+
+        Args:
+            gt_bb (np.array):1x1 Bounding boxes of gts
+            dt_bbs (np.array):NUM_dts Bounding boxes of dts
+
+        Returns:
+            np.array: Num_dts
+        """
 
         gt_area = (gt_bb[2] + 1) \
             * (gt_bb[3] + 1)
@@ -228,7 +280,12 @@ class COCOEvaluator(COCO):
         iou = intersect / (gt_area + dt_areas - intersect)
         return iou
 
-    def visualize(self):
+    def visualize(self) -> bool:
+        """Visualize all bounding boxes and types in images.
+
+        Returns:
+            bool: _description_
+        """
         if self.eval == False:
             print('Evaluation should be done first.')
             return False
@@ -296,6 +353,8 @@ class COCOEvaluator(COCO):
         return True
 
     def dump_middle_file_json(self):
+        """Dump a middle file containing dts, gts with count and types.
+        """
 
         def images(cocoGt):
             img_ids = cocoGt.getImgIds()
@@ -344,8 +403,8 @@ class COCOEvaluator(COCO):
 
 
 if __name__ == '__main__':
-    path_to_coco_dir = "../sample_data/"
-    path_to_result_dir = "../sample_results/"
+    path_to_coco_dir = "sample_data/"
+    path_to_result_dir = "sample_results/"
     path_to_gt = os.path.join(path_to_coco_dir, 'coco', 'gt.json')
     path_to_dt = os.path.join(path_to_coco_dir, 'coco', 'dt.json')
     path_to_image_dir = os.path.join(path_to_coco_dir, 'images')

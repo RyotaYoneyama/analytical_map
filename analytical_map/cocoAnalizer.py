@@ -10,16 +10,19 @@ import matplotlib.pyplot as plt
 import copy
 import cv2
 from typing import Tuple
-from params import cocoParams
 from dataclasses import asdict
 import copy
+
+from analytical_map.params import cocoParams
 
 
 class COCOAnalizer(COCO):
     def __init__(self, middle_file, result_dir, params: cocoParams):
         super().__init__()
 
-        self.cocoGt, self.cocoDt = self.init_coco(middle_file)
+        self.cocoGt = None
+        self.cocoDt = None
+        assert self.init_coco(middle_file)
 
         self.result_dir = result_dir
         os.makedirs(self.result_dir, exist_ok=True)
@@ -35,7 +38,7 @@ class COCOAnalizer(COCO):
         self.recall_inter = params.recall_inter
         self.area_rng = np.insert(params.area_rng, 0, self.area_all, axis=0)
 
-    def init_coco(self, middle_file: str) -> Tuple[COCO, COCO]:
+    def init_coco(self, middle_file: str) -> bool:
         """_summary_
 
         Args:
@@ -44,7 +47,7 @@ class COCOAnalizer(COCO):
             middle_file (str): _description_
 
         Returns:
-            COCO, COCO: _description_
+            bool: _description_
         """
         if middle_file is not None:
             if os.path.isfile(middle_file):
@@ -53,7 +56,10 @@ class COCOAnalizer(COCO):
                 cocoDt = cocoGt.loadRes(_cocoDt)
                 if self.evaluation_check(cocoGt, cocoDt) == False:
                     return False
-                return cocoGt, cocoDt
+
+                self.cocoGt = cocoGt
+                self.cocoDt = cocoDt
+                return True
         else:
             print('ERROR:Could not read files')
             return False
@@ -299,8 +305,8 @@ class COCOAnalizer(COCO):
 
 
 if __name__ == '__main__':
-    path_to_coco_dir = "../sample_data/"
-    path_to_result_dir = "../sample_results/"
+    path_to_coco_dir = "sample_data/"
+    path_to_result_dir = "sample_results/"
     path_to_middle_file = os.path.join(path_to_result_dir, 'middle_file.json')
 
     p = cocoParams(recall_inter=np.arange(0, 1.01, 0.1), area_rng=np.array([

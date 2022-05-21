@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analytical_map package &mdash; analytical_map v1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to analytical_map’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> analytical_map
+          </a>
+              <div class="version">
+                v1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">analytical_map package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-analytical_map.cocoAnalizer">analytical_map.cocoAnalizer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-analytical_map.cocoEvaluator">analytical_map.cocoEvaluator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-analytical_map.main">analytical_map.main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-analytical_map.params">analytical_map.params module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-analytical_map">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">analytical_map</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>analytical_map package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/analytical_map.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="analytical-map-package">
+<h1>analytical_map package<a class="headerlink" href="#analytical-map-package" title="Permalink to this headline"></a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</div>
+<div class="section" id="module-analytical_map.cocoAnalizer">
+<span id="analytical-map-cocoanalizer-module"></span><h2>analytical_map.cocoAnalizer module<a class="headerlink" href="#module-analytical_map.cocoAnalizer" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="analytical_map.cocoAnalizer.COCOAnalizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analytical_map.cocoAnalizer.</span></span><span class="sig-name descname"><span class="pre">COCOAnalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">middle_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analytical_map.params.cocoParams" title="analytical_map.params.cocoParams"><span class="pre">analytical_map.params.cocoParams</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoAnalizer.html#COCOAnalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoAnalizer.COCOAnalizer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pycocotools.coco.COCO</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoAnalizer.COCOAnalizer.ap_analyze">
+<span class="sig-name descname"><span class="pre">ap_analyze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoAnalizer.html#COCOAnalizer.ap_analyze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoAnalizer.COCOAnalizer.ap_analyze" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoAnalizer.COCOAnalizer.dump_final_results_json">
+<span class="sig-name descname"><span class="pre">dump_final_results_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoAnalizer.html#COCOAnalizer.dump_final_results_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoAnalizer.COCOAnalizer.dump_final_results_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoAnalizer.COCOAnalizer.evaluation_check">
+<span class="sig-name descname"><span class="pre">evaluation_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cocoGt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pycocotools.coco.COCO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cocoDT</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pycocotools.coco.COCO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/analytical_map/cocoAnalizer.html#COCOAnalizer.evaluation_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoAnalizer.COCOAnalizer.evaluation_check" title="Permalink to this definition"></a></dt>
+<dd><p>Check whether middle file is evaluated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cocoGt</strong> (<em>COCO</em>) – Ground truth</p></li>
+<li><p><strong>cocoDT</strong> (<em>COCO</em>) – Detections</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if both cocoGt and cocoDT were evaluated.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoAnalizer.COCOAnalizer.init_coco">
+<span class="sig-name descname"><span class="pre">init_coco</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">middle_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pycocotools.coco.COCO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pycocotools.coco.COCO</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/analytical_map/cocoAnalizer.html#COCOAnalizer.init_coco"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoAnalizer.COCOAnalizer.init_coco" title="Permalink to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cocoGt_file</strong> (<em>str</em>) – _description_</p></li>
+<li><p><strong>cocoDt_file</strong> (<em>str</em>) – _description_</p></li>
+<li><p><strong>middle_file</strong> (<em>str</em>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>COCO, COCO</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoAnalizer.COCOAnalizer.precision_analyze">
+<span class="sig-name descname"><span class="pre">precision_analyze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoAnalizer.html#COCOAnalizer.precision_analyze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoAnalizer.COCOAnalizer.precision_analyze" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoAnalizer.COCOAnalizer.recall_analyze">
+<span class="sig-name descname"><span class="pre">recall_analyze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoAnalizer.html#COCOAnalizer.recall_analyze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoAnalizer.COCOAnalizer.recall_analyze" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-analytical_map.cocoEvaluator">
+<span id="analytical-map-cocoevaluator-module"></span><h2>analytical_map.cocoEvaluator module<a class="headerlink" href="#module-analytical_map.cocoEvaluator" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analytical_map.cocoEvaluator.</span></span><span class="sig-name descname"><span class="pre">COCOEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cocoGt_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cocoDt_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analytical_map.params.cocoParams" title="analytical_map.params.cocoParams"><span class="pre">analytical_map.params.cocoParams</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pycocotools.coco.COCO</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator.dump_middle_file_json">
+<span class="sig-name descname"><span class="pre">dump_middle_file_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator.dump_middle_file_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator.dump_middle_file_json" title="Permalink to this definition"></a></dt>
+<dd><p>Dump a middle file containing dts, gts with count and types.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator.eval" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate all images by repeating eval_per_img for all images.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator.eval_per_img">
+<span class="sig-name descname"><span class="pre">eval_per_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cocoGt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pycocotools.coco.COCO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cocoDt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pycocotools.coco.COCO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iou_thresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iou_loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator.eval_per_img"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator.eval_per_img" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate bounding boxes in one image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cocoGt</strong> (<em>COCO</em>) – COCO ground truth instance</p></li>
+<li><p><strong>cocoDt</strong> (<em>COCO</em>) – COCO detection instance</p></li>
+<li><p><strong>imgId</strong> (<em>list</em>) – Image Id</p></li>
+<li><p><strong>type_order</strong> (<em>dict</em>) – type_order</p></li>
+<li><p><strong>iou_thresh</strong> (<em>float</em>) – Threshold for IoU</p></li>
+<li><p><strong>iou_loc</strong> (<em>float</em>) – Threshold for IoU to define ‘Localization(Loc)’ error.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if eval_per_img is done correctly.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator.init_coco">
+<span class="sig-name descname"><span class="pre">init_coco</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cocoGt_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cocoDt_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pycocotools.coco.COCO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pycocotools.coco.COCO</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator.init_coco"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator.init_coco" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize coco data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cocoGt_file</strong> (<em>str</em>) – COCO ground truth path</p></li>
+<li><p><strong>cocoDt_file</strong> (<em>str</em>) – COCO detection file path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>COCO ground truth and detection instances.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>COCO, COCO</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator.init_dirs">
+<span class="sig-name descname"><span class="pre">init_dirs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator.init_dirs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator.init_dirs" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize directories</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_dir</strong> (<em>str</em>) – Image directory path</p></li>
+<li><p><strong>result_dir</strong> (<em>str</em>) – Results(outputs) directory path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if image_dir exists and result_dir is successfully crated.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator.iou_per_single_gt">
+<span class="sig-name descname"><span class="pre">iou_per_single_gt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_bb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_bbs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.array</span></span></span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator.iou_per_single_gt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator.iou_per_single_gt" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate IoU between one gt and multiple dts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gt_bb</strong> (<em>np.array</em>) – 1x1 Bounding boxes of gts</p></li>
+<li><p><strong>dt_bbs</strong> (<em>np.array</em>) – NUM_dts Bounding boxes of dts</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Num_dts</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analytical_map.cocoEvaluator.COCOEvaluator.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/analytical_map/cocoEvaluator.html#COCOEvaluator.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.cocoEvaluator.COCOEvaluator.visualize" title="Permalink to this definition"></a></dt>
+<dd><p>Visualize all bounding boxes and types in images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>_description_</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-analytical_map.main">
+<span id="analytical-map-main-module"></span><h2>analytical_map.main module<a class="headerlink" href="#module-analytical_map.main" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="analytical_map.main.eval_and_analyze">
+<span class="sig-prename descclassname"><span class="pre">analytical_map.main.</span></span><span class="sig-name descname"><span class="pre">eval_and_analyze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gt_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#analytical_map.params.cocoParams" title="analytical_map.params.cocoParams"><span class="pre">analytical_map.params.cocoParams</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/main.html#eval_and_analyze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.main.eval_and_analyze" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analytical_map.main.get_arguments">
+<span class="sig-prename descclassname"><span class="pre">analytical_map.main.</span></span><span class="sig-name descname"><span class="pre">get_arguments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/main.html#get_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.main.get_arguments" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analytical_map.main.main">
+<span class="sig-prename descclassname"><span class="pre">analytical_map.main.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/main.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.main.main" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-analytical_map.params">
+<span id="analytical-map-params-module"></span><h2>analytical_map.params module<a class="headerlink" href="#module-analytical_map.params" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="analytical_map.params.cocoParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analytical_map.params.</span></span><span class="sig-name descname"><span class="pre">cocoParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iou_thresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iou_loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recall_inter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.arange</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.,</span> <span class="pre">0.1,</span> <span class="pre">0.2,</span> <span class="pre">0.3,</span> <span class="pre">0.4,</span> <span class="pre">0.5,</span> <span class="pre">0.6,</span> <span class="pre">0.7,</span> <span class="pre">0.8,</span> <span class="pre">0.9,</span> <span class="pre">1.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([[0.000e+00,</span> <span class="pre">1.024e+03],</span> <span class="pre">[1.024e+03,</span> <span class="pre">9.216e+03],</span> <span class="pre">[9.216e+03,</span> <span class="pre">1.000e+10]])</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analytical_map/params.html#cocoParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analytical_map.params.cocoParams" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>cocoParams(iou_thresh: float = 0.5, iou_loc: float = 0.2, recall_inter: &lt;built-in function arange&gt; = array([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ]), area_rng: &lt;built-in function array&gt; = array([[0.000e+00, 1.024e+03],
+[1.024e+03, 9.216e+03],
+[9.216e+03, 1.000e+10]]))</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="analytical_map.params.cocoParams.area_rng">
+<span class="sig-name descname"><span class="pre">area_rng</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.array</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([[0.000e+00,</span> <span class="pre">1.024e+03],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[1.024e+03,</span> <span class="pre">9.216e+03],</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">[9.216e+03,</span> <span class="pre">1.000e+10]])</span></em><a class="headerlink" href="#analytical_map.params.cocoParams.area_rng" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="analytical_map.params.cocoParams.iou_loc">
+<span class="sig-name descname"><span class="pre">iou_loc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.2</span></em><a class="headerlink" href="#analytical_map.params.cocoParams.iou_loc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="analytical_map.params.cocoParams.iou_thresh">
+<span class="sig-name descname"><span class="pre">iou_thresh</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#analytical_map.params.cocoParams.iou_thresh" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="analytical_map.params.cocoParams.recall_inter">
+<span class="sig-name descname"><span class="pre">recall_inter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.arange</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([0.</span> <span class="pre">,</span> <span class="pre">0.1,</span> <span class="pre">0.2,</span> <span class="pre">0.3,</span> <span class="pre">0.4,</span> <span class="pre">0.5,</span> <span class="pre">0.6,</span> <span class="pre">0.7,</span> <span class="pre">0.8,</span> <span class="pre">0.9,</span> <span class="pre">1.</span> <span class="pre">])</span></em><a class="headerlink" href="#analytical_map.params.cocoParams.recall_inter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-analytical_map">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-analytical_map" title="Permalink to this headline"></a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to analytical_map’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
