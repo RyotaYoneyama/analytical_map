@@ -42,7 +42,7 @@ python3 -m example.minimum_example COCO_GT_FILE_PATH COCO_DT_FILE_PATH RESULT_DI
 For example,
 ```
 python3 -m example.minimum_example example/data/coco/gt.json example/data/coco/dt.json example/results/ example/data/images/
-
+```
 ### Evaluate every images and dump the evaluation as a middle file.
 Count all TPs, FPs, FNs and categorize them followings:
 - TPs->'Match', 
