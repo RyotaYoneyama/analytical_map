@@ -63,7 +63,7 @@ python3 -m analytical_map.main sample_data/coco/gt.json sample_data/coco/dt.json
 ![Use flow chart](docs/figures/use_flow.drawio.png)
 
 ## Details
-![docstring](docs/_build/index.html)
+docstring -> (docs/_build/index.html)
 
 
 ## Project status
