@@ -63,7 +63,7 @@ python3 -m analytical_map.main sample_data/coco/gt.json sample_data/coco/dt.json
 ![Use flow chart](docs/figures/use_flow.drawio.png)
 
 ## Details
-![docstring](https://ryotayoneyama.github.io/analytical_map/)
+[docstring](https://ryotayoneyama.github.io/analytical_map/)
 
 
 ## Project status
