@@ -1,33 +1,22 @@
-import time
-import json
-import collections as cl
 from pycocotools.coco import COCO
 import numpy as np
 import os
-import sys
-import io
-import matplotlib.pyplot as plt
-import copy
-import cv2
-from typing import Tuple
-from dataclasses import asdict
-import copy
+from nptyping import NDArray
 
 from analytical_map.params import cocoParams
+from analytical_map.tools.dump_json import dump_middle_file_json as _dump_middle_file_json
 
 
-class COCOEvaluator(COCO):
-    def __init__(self, cocoGt_file: str, cocoDt_file: str, result_dir: str, image_dir: str, params: cocoParams):
-        """init
+class COCOEvaluator():
+    def __init__(self, cocoGt_file: str, cocoDt_file: str, result_dir: str, params: cocoParams) -> None:
+        """Init
 
         Args:
             cocoGt_file (str): COCO ground truth path
             cocoDt_file (str): COCO detection file path
             result_dir (str): Output path
-            image_dir (str): Input image path
-            params (cocoParams): Parameters for evalutation
+            params (cocoParams): Parameters for evaluations
         """
-        super().__init__()
 
         # Input
         self.cocoGt = None
@@ -35,44 +24,20 @@ class COCOEvaluator(COCO):
         assert self.init_coco(
             cocoGt_file, cocoDt_file)
 
-        self.image_dir = image_dir
         self.result_dir = result_dir
-        assert self.init_dirs(self.image_dir, self.result_dir)
 
         # Fixed variables
         self.type = ['Match', 'LC', 'DC', 'Cls', 'Loc', 'Bkg', 'Miss']
         self.type_order = {'Match': 0, 'LC': 1, 'DC': 1,
                            'Cls': 2, 'Loc': 3, 'Bkg': 4, 'Miss': 4, None: 5}
-        self.type_color = {'Match': (10, 20, 190), 'LC': (100, 20, 190), 'DC': (30, 140, 140),
-                           'Cls': (190, 20, 100), 'Loc': (190, 30, 30), 'Bkg': (50, 50, 50), 'Miss': (80, 20, 170)}
+
         self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
         self.is_evaluated = False
-        self.params = params
 
         # User variables
-        self.iou_thresh = params.iou_thresh
-        self.iou_loc = params.iou_loc
+        self.params = params
 
-    def init_dirs(self, image_dir: str, result_dir: str) -> bool:
-        """Initialize directories
-
-        Args:
-            image_dir (str): Image directory path
-            result_dir (str): Results(outputs) directory path
-
-        Returns:
-            bool: True if image_dir exists and result_dir is successfully crated. 
-        """
-
-        if not os.path.isdir(image_dir):
-            print('No image dir')
-            return False
-
-        os.makedirs(result_dir, exist_ok=True)
-
-        return True
-
-    def init_coco(self, cocoGt_file: str, cocoDt_file: str) -> Tuple[COCO, COCO]:
+    def init_coco(self, cocoGt_file: str, cocoDt_file: str) -> bool:
         """Initialize coco data
 
         Args:
@@ -80,7 +45,7 @@ class COCOEvaluator(COCO):
             cocoDt_file (str): COCO detection file path
 
         Returns:
-            COCO, COCO: COCO ground truth and detection instances.
+            boo: True if cocoGt and cocoDt exist.
         """
         if cocoGt_file is not None and cocoDt_file is not None:
             if os.path.isfile(cocoGt_file) and os.path.isfile(cocoDt_file):
@@ -103,14 +68,14 @@ class COCOEvaluator(COCO):
             print('ERROR:Could not read files')
             return False
 
-    def eval(self):
+    def eval(self) -> None:
         """ Evaluate all images by repeating eval_per_img for all images.
         """
         if self.is_evaluated == False:
             img_ids = self.cocoGt.getImgIds()
             for img_id in img_ids:
                 if self.eval_per_img(self.cocoGt, self.cocoDt, img_id,
-                                     self.type_order, self.iou_thresh, self.iou_loc) == False:
+                                     self.type_order, self.params.iou_thresh, self.params.iou_loc) == False:
                     self.is_evaluated = False
                     break
             self.is_evaluated = True
@@ -249,15 +214,15 @@ class COCOEvaluator(COCO):
                                   "corr_id": None, 'iou': None}
         return True
 
-    def iou_per_single_gt(self, gt_bb: np.array, dt_bbs: np.array) -> np.array:
+    def iou_per_single_gt(self, gt_bb: NDArray, dt_bbs: NDArray) -> NDArray:
         """Calculate IoU between one gt and multiple dts.
 
         Args:
-            gt_bb (np.array):1x1 Bounding boxes of gts
-            dt_bbs (np.array):NUM_dts Bounding boxes of dts
+            gt_bb (NDArray): 1x1 Bounding boxes of gts
+            dt_bbs (NDArray): NUM_dts Bounding boxes of dts
 
         Returns:
-            np.array: Num_dts
+            NDArray: IoU(Num_dts)
         """
 
         gt_area = (gt_bb[2] + 1) \
@@ -280,138 +245,21 @@ class COCOEvaluator(COCO):
         iou = intersect / (gt_area + dt_areas - intersect)
         return iou
 
-    def visualize(self) -> bool:
-        """Visualize all bounding boxes and types in images.
-
-        Returns:
-            bool: _description_
-        """
-        if self.eval == False:
-            print('Evaluation should be done first.')
-            return False
-
-        dir_TP = os.path.join(self.result_dir, 'visualize', 'TP')
-        dir_not_TP = os.path.join(self.result_dir, 'visualize', 'not_TP')
-        os.makedirs(dir_TP, exist_ok=True)
-        os.makedirs(dir_not_TP, exist_ok=True)
-
-        img_ids = self.cocoGt.getImgIds()
-        for img_id in img_ids:
-            img = self.cocoGt.loadImgs(ids=img_id)[0]
-
-            img_cv2 = cv2.imread(os.path.join(
-                self.image_dir, img["file_name"]))
-            gts_ids = self.cocoGt.getAnnIds(imgIds=img['id'],  iscrowd=None)
-            dts_ids = self.cocoDt.getAnnIds(imgIds=img['id'],  iscrowd=None)
-
-            gts_per_img = self.cocoGt.loadAnns(gts_ids)
-            dts_per_img = self.cocoDt.loadAnns(dts_ids)
-
-            is_all_TPs = True
-            for gt in gts_per_img:
-
-                if gt['eval']['count'] != 'TP':
-                    is_all_TPs = False
-
-                x_min = int(gt["bbox"][0])
-                y_min = int(gt["bbox"][1])
-                x_max = int(gt["bbox"][0]) + int(gt["bbox"][2])
-                y_max = int(gt["bbox"][1]) + int(gt["bbox"][3])
-
-                cv2.rectangle(img_cv2, (x_min, y_min),
-                              (x_max, y_max), self.type_color[gt['eval']['type']], thickness=2)
-                cv2.putText(img_cv2, str(gt['eval']['type']),
-                            org=(x_min, y_min-5),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=0.5,
-                            color=self.type_color[gt['eval']['type']],
-                            thickness=2,
-                            lineType=cv2.LINE_4)
-
-            for dt in dts_per_img:
-                if dt['eval']['count'] != 'TP':
-                    is_all_TPs = False
-
-                x_min = int(dt["bbox"][0])
-                y_min = int(dt["bbox"][1])
-                x_max = int(dt["bbox"][0]) + int(dt["bbox"][2])
-                y_max = int(dt["bbox"][1]) + int(dt["bbox"][3])
-
-                cv2.rectangle(img_cv2, (x_min, y_min), (x_max, y_max), tuple(
-                    [1.3*c for c in self.type_color[dt['eval']['type']]]))
-                cv2.putText(img_cv2,  str(dt['eval']['type']),
-                            org=(x_min, y_min-5),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=0.5,
-                            color=self.type_color[dt['eval']['type']],
-                            thickness=1,
-                            lineType=cv2.LINE_4)
-
-            save_dir = dir_TP if is_all_TPs else dir_not_TP
-            cv2.imwrite(os.path.join(save_dir, img["file_name"]), img_cv2)
-
-        return True
-
-    def dump_middle_file_json(self):
+    def dump_middle_file_json(self, middle_file: str = 'middle_file.json'):
         """Dump a middle file containing dts, gts with count and types.
         """
-
-        def images(cocoGt):
-            img_ids = cocoGt.getImgIds()
-            return cocoGt.loadImgs(ids=img_ids)
-
-        def categories(cocoGt):
-            return cocoGt.loadCats(cocoGt.getCatIds())
-
-        def annotations(cocoGt):
-            annIds = cocoGt.getAnnIds()
-            return cocoGt.loadAnns(ids=annIds)
-
-        def detections(cocoDt):
-            annIds = cocoDt.getAnnIds()
-            return cocoDt.loadAnns(ids=annIds)
-
-        def param2dict(params):
-            _params = copy.deepcopy(params)
-            _params.recall_inter = _params.recall_inter.tolist()
-            _params.area_rng = _params.area_rng.tolist()
-            tmp = [asdict(_params)]
-            return tmp
-
-        query_list = ["licenses", "info", "categories", "images",
-                      "annotations", "detections", "params", "segment_info"]
-        js = cl.OrderedDict()
-        for i in range(len(query_list)):
-            tmp = ""
-            if query_list[i] == "categories":
-                tmp = categories(self.cocoGt)
-            if query_list[i] == "images":
-                tmp = images(self.cocoGt)
-            if query_list[i] == "annotations":
-                tmp = annotations(self.cocoGt)
-            if query_list[i] == "detections":
-                tmp = detections(self.cocoDt)
-            if query_list[i] == "params":
-                tmp = param2dict(self.params)
-            # save it
-            js[query_list[i]] = tmp
-        # write
-        middle_file_path = os.path.join(self.result_dir, 'middle_file.json')
-        fw = open(middle_file_path, 'w')
-        json.dump(js, fw, indent=2)
-        return middle_file_path
+        _dump_middle_file_json(self.cocoGt, self.cocoDt,
+                               self.params, self.result_dir, middle_file)
 
 
 if __name__ == '__main__':
-    path_to_coco_dir = "sample_data/"
-    path_to_result_dir = "sample_results/"
+    path_to_coco_dir = "example/data/"
+    path_to_result_dir = "example/results/"
     path_to_gt = os.path.join(path_to_coco_dir, 'coco', 'gt.json')
     path_to_dt = os.path.join(path_to_coco_dir, 'coco', 'dt.json')
-    path_to_image_dir = os.path.join(path_to_coco_dir, 'images')
 
     p = cocoParams(iou_thresh=0.5, iou_loc=0.2)
     cocoEval = COCOEvaluator(path_to_gt, path_to_dt,
-                             path_to_result_dir, path_to_image_dir, p)
+                             path_to_result_dir, p)
     cocoEval.eval()
-    cocoEval.visualize()
-    middle_file_path = cocoEval.dump_middle_file_json()
+    cocoEval.dump_middle_file_json(middle_file='middle_file.json')

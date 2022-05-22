@@ -31,39 +31,44 @@ docker run --rm -it --privileged --net=host --ipc=host \
 ```
 
 ## Usage
-### Evaluate every images and crate a middle file.
+
+### Evaluate & Analyze & Visualize
+If you would like to execute the above two steps, you can run them by follwoings:
+```
+python3 -m example.minimum_example COCO_GT_FILE_PATH COCO_DT_FILE_PATH RESULT_DIR IMAGE_DIR
+```
+For example,
+```
+python3 -m example.minimum_example example/data/coco/gt.json example/data/coco/dt.json example/results/ example/data/images/
+```
+### Evaluate every images and dump the evaluation as a middle file.
 Count all TPs, FPs, FNs and categorize them followings:
 - TPs->'Match', 
-- FPs->'DC (Double Count)', 'Cls (Class mistake)', 'Loc(Location)', 'Bkg (Background)'
-- FNs-> 'LC (Less Count)', 'Miss'
+- FPs, FNs->'DC (Double Count)', 'Cls (Class mistake)', 'Loc(Location)', 'Bkg (Background)', 'LC (Less Count)', 'Miss'.
 
 ```
 python3 -m analytical_map.cocoEvaluator
 ```
-The above command will create the middle file named 'sample_results/middle_file.json' and visualization in 'sample_results/visualize'.
+The above command will create the middle file named 'example/results/middle_file.json'.
 
-### Analyze the middle file and calculate AP, precision, and recall.
+### Calculate APs, precision, and recall from the middle file.
+Create the final results named 'example/results/final_results.json' containing scores of AP, precision, and recall.
 ```
-python3 -m analytical_map.cocoAnalizer
+python3 -m analytical_map.cocoCalculator
 ```
-The above command will create the final results named 'sample_results/final_results.json' containing scores of AP, precision, and recall.
-The charts of those scores are dipicted in 'sample_results/'.
 
-### Evaluate & Analyze
-If you would like to execute the above two steps, you can run them by follwoings:
+### Visualize the final result and middle file.
+Visualize the final results and middle file in 'example/results/figures' and 'example/results/draw_bbs'. 
 ```
-python3 -m analytical_map.main COCO_GT_FILE_PATH COCO_DT_FILE_PATH RESULT_DIR IMAGE_DIR
+python3 -m analytical_map.cocoVisualizer
 ```
-For example,
-```
-python3 -m analytical_map.main sample_data/coco/gt.json sample_data/coco/dt.json sample_results sample_data/images/
-```
+
 
 ## Use flow chart
 ![Use flow chart](docs/figures/use_flow.drawio.png)
 
 ## Details
-docstring -> (docs/_build/index.html)
+[API](https://ryotayoneyama.github.io/analytical_map/)
 
 
 ## Project status

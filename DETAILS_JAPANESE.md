@@ -1,7 +1,7 @@
 # はじめに
 本書は、社内の物体検出の評価基準であるmAPを計算するスクリプトである。特に下記の特徴をもつ。
 - mAPを計算する。
-- mAPを物体のバウンディングボックスごとに計算する．
+- mAPを物体のバウンディングボックス（BB）ごとに計算する．
 - TP, FP、FNを6つに分類でき、検出の失敗を分析できる．
 - COCOのフォーマットに準ずることで、新たなデータ構造の学習が少ない．
 ## 背景
@@ -11,27 +11,27 @@
 例えば物体の大きさごとに，未検出・ご検出・重複カウントなどを評価したい場合，ドキュメントが少ないOSSのコードを理解して実装するひつようがある．
 そこで自社で実装することにより，コードの安全性・保守性・拡張性が高いAPを計算するライブラリの開発を目指す．
 ## analytical_map基本方針  
-* 入力はCOCOフォーマットとし，他フォーマットに関しては変換コードを用いる．
+* 入力はCOCOフォーマットとする．他フォーマットに関しては変換コードを用いる．
 * analytical_map はEvaluate, Analyzeの２段構成となっている．
-* Evaluateでは，バウンディングボックスを分類する．
-  * バウンディングボックスの分類はまず{'TP', 'FP'，'FN'}のカウント分類を行い，さらにそれらカウントを｛'Match', 'DC', 'LC', 'Cls', 'Loc', 'Bkg', 'Miss'｝のタイプに分類する．
-  * 上記分類を中間ファイルとして出力する．  
-* Analizeでは，上記中間ファイルを入力として，タイプごとのAP，Precision,Recallを計算し出力する．
-* 
+  * Evaluateでは，バウンディングボックスを分類する．
+    * eval:バウンディングボックスの分類はまず{'TP', 'FP'，'FN'}のカウント分類を行い，さらにそれらカウントを｛'Match', 'DC', 'LC', 'Cls', 'Loc', 'Bkg', 'Miss'｝のタイプに分類する．
+    * 上記分類を中間ファイル（Middle file）として出力する．
+  * Analizeでは，上記中間ファイルを入力として，タイプごとのAP，Precision,Recallを計算し出力する．
+    * ap_analyzer：APをカテゴリ数ｘBBサイズで出力する．
+    * precision_analyzer：Precisionをカテゴリ数出力する．
+    * recall_analyzer：Recallをカテゴリ数出力する．
+    * visualize:｛'Match', 'DC', 'LC', 'Cls', 'Loc', 'Bkg', 'Miss'｝を可視化する．
+ 
 # 参考資料
-* 画像取得ソフトウェア設計仕様書.xlsx  
-  ym_cameraの前身となるカメラ制御インターフェースを含む画像取得ソフトの設計仕様書。  
-* LUCID製カメラ制御ソフトウェア開発 設計仕様書.xlsx  
-  ym_cameraの拡張として、LUCIDカメラ対応およびROS対応を実装するための設計仕様書。  
-* doxygen資料  
-  Doxyfileをリポジトリに含めている。ソースコードのdoxygen用コメントからドキュメントを出力可能。  
-  クラスの継承やオブジェクトや関数の呼び出し関係は、doxygen資料から参照可能。  
+* [Use flow chart](docs/figures/use_flow.drawio.png) 
+* [API](https://ryotayoneyama.github.io/analytical_map/)
+ 
 # ソースコード
 ディレクトリ階層を下記する。  
 analytical_map  
-├analytical_map : ソースコード  
-├debug : デバッグ用ツールおよび描画結果（予定）  
-├doc : ドキュメント  
+├analytical_map : ソースコード
+├debug : デバッグ用ツールおよび描画結果
+├docs : sphinx
 ├docker : Dockerfile  
 ├sample_data : サンプル用データ
 ├sample_results　:　サンプル用データに対する出力
