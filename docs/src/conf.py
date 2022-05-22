@@ -10,20 +10,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-sys.path.insert(0, os.path.abspath('../'))
+# import os
+# import sys
+# sys.path.insert(0, '/home/ryota/dl/tools/analytical_map/analytical_map')
+
 
 # -- Project information -----------------------------------------------------
 
 project = 'analytical_map'
-author = 'Ryota Yoneyama'
-
-# The short X.Y version
-version = 'v1.0'
-
-# The full version, including alpha/beta/rc tags
-release = 'v1.0'
+copyright = '2022, Author'
+author = 'Author'
 
 
 # -- General configuration ---------------------------------------------------
@@ -35,9 +31,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
-    'sphinx.ext.napoleon'
 ]
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -60,7 +54,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'alabaster'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

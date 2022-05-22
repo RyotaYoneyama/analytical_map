@@ -4,10 +4,18 @@ analytical\_map package
 Submodules
 ----------
 
-analytical\_map.cocoAnalizer module
+analytical\_map.cocoAnalyzer module
 -----------------------------------
 
-.. automodule:: analytical_map.cocoAnalizer
+.. automodule:: analytical_map.cocoAnalyzer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+analytical\_map.cocoCalculator module
+-------------------------------------
+
+.. automodule:: analytical_map.cocoCalculator
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,10 +28,10 @@ analytical\_map.cocoEvaluator module
    :undoc-members:
    :show-inheritance:
 
-analytical\_map.main module
----------------------------
+analytical\_map.cocoVisualizer module
+-------------------------------------
 
-.. automodule:: analytical_map.main
+.. automodule:: analytical_map.cocoVisualizer
    :members:
    :undoc-members:
    :show-inheritance:

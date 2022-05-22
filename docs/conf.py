@@ -10,20 +10,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-sys.path.insert(0, os.path.abspath('../'))
+# import os
+# import sys
+# sys.path.insert(0, '/home/ryota/dl/tools/analytical_map/analytical_map')
+
 
 # -- Project information -----------------------------------------------------
 
 project = 'analytical_map'
+copyright = '2022, MIT License'
 author = 'Ryota Yoneyama'
-
-# The short X.Y version
-version = 'v1.0'
-
-# The full version, including alpha/beta/rc tags
-release = 'v1.0'
 
 
 # -- General configuration ---------------------------------------------------
