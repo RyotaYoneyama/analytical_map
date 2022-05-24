@@ -3,24 +3,25 @@ import numpy as np
 import os
 from nptyping import NDArray
 
-from analytical_map.params import cocoParams
+from analytical_map.params import COCOParams
 from analytical_map.tools.dump_json import dump_middle_file_json as _dump_middle_file_json
 
 
 class COCOEvaluator():
-    def __init__(self, cocoGt_file: str, cocoDt_file: str, result_dir: str, params: cocoParams) -> None:
+    def __init__(self, cocoGt_file: str, cocoDt_file: str, result_dir: str, params: COCOParams) -> None:
         """Init
 
         Args:
             cocoGt_file (str): COCO ground truth path
             cocoDt_file (str): COCO detection file path
             result_dir (str): Output path
-            params (cocoParams): Parameters for evaluations
+            params (COCOParams): Parameters for evaluations
         """
 
         # Input
         self.cocoGt = None
         self.cocoDt = None
+        self.cats = None
         assert self.init_coco(
             cocoGt_file, cocoDt_file)
 
@@ -31,7 +32,6 @@ class COCOEvaluator():
         self.type_order = {'Match': 0, 'LC': 1, 'DC': 1,
                            'Cls': 2, 'Loc': 3, 'Bkg': 4, 'Miss': 4, None: 5}
 
-        self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
         self.is_evaluated = False
 
         # User variables
@@ -60,6 +60,7 @@ class COCOEvaluator():
                 _ = [d.update(eval_dict) for d in _dts]
                 self.cocoGt = cocoGt
                 self.cocoDt = cocoDt
+                self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
                 return True
             else:
                 print('ERROR:Could not read files')
@@ -68,7 +69,7 @@ class COCOEvaluator():
             print('ERROR:Could not read files')
             return False
 
-    def eval(self) -> None:
+    def evaluate(self) -> None:
         """ Evaluate all images by repeating eval_per_img for all images.
         """
         if self.is_evaluated == False:
@@ -169,8 +170,8 @@ class COCOEvaluator():
                                 "count": "FN", "type": "LC", "corr_id": dts[id_dets_match[0]]['id'], 'iou': iou[id_det]}
 
                 # Cls
-                id_dets_all = np.where(Cat_boolean == True)[0]
-                for id_det in id_dets_all:
+                id_dets_cat = np.where(Cat_boolean == True)[0]
+                for id_det in id_dets_cat:
                     dt = dts[id_det]
                     if type_order[dt['eval']['type']] > type_order['Cls']:
                         dt['eval'] = {"count": "FP", "type": "Cls",
@@ -258,8 +259,8 @@ if __name__ == '__main__':
     path_to_gt = os.path.join(path_to_coco_dir, 'coco', 'gt.json')
     path_to_dt = os.path.join(path_to_coco_dir, 'coco', 'dt.json')
 
-    p = cocoParams(iou_thresh=0.5, iou_loc=0.2)
+    p = COCOParams(iou_thresh=0.5, iou_loc=0.2)
     cocoEval = COCOEvaluator(path_to_gt, path_to_dt,
                              path_to_result_dir, p)
-    cocoEval.eval()
+    cocoEval.evaluate()
     cocoEval.dump_middle_file_json(middle_file='middle_file.json')

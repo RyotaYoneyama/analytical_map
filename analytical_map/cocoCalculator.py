@@ -6,25 +6,25 @@ import copy
 from nptyping import NDArray
 from typing import Tuple
 
-from analytical_map.params import cocoParams
+from analytical_map.params import COCOParams
 from analytical_map.tools.dump_json import dump_final_results_json as _dump_final_results_json
 from analytical_map.tools.draw_chart import *
 
 
 class COCOCalculator():
-    def __init__(self, middle_file: str, result_dir: str, image_dir: str, params: cocoParams) -> None:
+    def __init__(self, middle_file: str, result_dir: str, image_dir: str, params: COCOParams) -> None:
         """Init
 
         Args:
             middle_file (str): Path of a middle file
             result_dir (str): Path of a result directory
             image_dir (str): Path of an image directory
-            params (cocoParams): Params for calculations
+            params (COCOParams): Params for calculations
         """
 
         self.cocoGt = None
         self.cocoDt = None
-        assert self.init_coco(middle_file)
+        assert self.read_middle_file(middle_file)
 
         self.result_dir = result_dir
         self.image_dir = image_dir
@@ -40,12 +40,12 @@ class COCOCalculator():
         self.is_ap_calculated = False
         self.is_precision_calculated = False
         self.is_recall_calculated = False
-
+        self.is_evaluated = False
         self.params = params
         self.params.area_rng = np.insert(
             params.area_rng, 0, self.area_all, axis=0)
 
-    def init_coco(self, middle_file: str) -> bool:
+    def read_middle_file(self, middle_file: str) -> bool:
         """Initialize cocoGt and cocoDt with a midddle file
 
         Args:
@@ -59,11 +59,12 @@ class COCOCalculator():
                 cocoGt = COCO(middle_file)
                 _cocoDt = json.load(open(middle_file))['detections']
                 cocoDt = cocoGt.loadRes(_cocoDt)
-                if self.evaluation_check(cocoGt, cocoDt) == False:
+                self.is_evaluated = self.evaluation_check(cocoGt, cocoDt)
+                if self.is_evaluated == False:
                     return False
-
                 self.cocoGt = cocoGt
                 self.cocoDt = cocoDt
+                self.cats = self.cocoGt.loadCats(self.cocoGt.getCatIds())
                 return True
         else:
             print('ERROR:Could not read files')
@@ -86,6 +87,23 @@ class COCOCalculator():
         is_evaluated_dts = all([True if 'eval' in dt.keys()
                                 else False for dt in dts])
         return is_evaluated_gts and is_evaluated_dts
+
+    def calculate(self) -> None:
+        """Calculate precisions, recalls, and APs, and dump them as final results.
+
+        Args:
+            final_file (str, optional): A name of the final results. Defaults to 'final_results.json'.
+        """
+        if self.is_evaluated == False:
+            return False
+        self.precision_calculate()
+        self.recall_calculate()
+        self.ap_calculate()
+        self.is_precision_calculated = True
+        self.is_recall_calculated = True
+        self.is_ap_calculated = True
+
+        return True
 
     def precision_calculate(self) -> None:
         """Calculate precision
@@ -263,11 +281,9 @@ if __name__ == '__main__':
     path_to_middle_file = os.path.join(path_to_result_dir, 'middle_file.json')
     path_to_image_dir = os.path.join(path_to_coco_dir, 'images')
 
-    p = cocoParams(recall_inter=np.arange(0, 1.01, 0.1), area_rng=np.array([
+    p = COCOParams(recall_inter=np.arange(0, 1.01, 0.1), area_rng=np.array([
         [0, 1024], [1024, 9216], [9216, 10000000000.0]]))
     cocoCalc = COCOCalculator(path_to_middle_file,
                               path_to_result_dir, path_to_image_dir, p)
-    cocoCalc.precision_calculate()
-    cocoCalc.recall_calculate()
-    cocoCalc.ap_calculate()
+    cocoCalc.calculate()
     cocoCalc.dump_final_results_json(final_file='final_results.json')

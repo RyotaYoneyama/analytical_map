@@ -49,11 +49,13 @@ analytical_map
 
 # 基本設計
 ## クラス図概観
-インターフェースを継承してDepthCameraクラスを定義することをしている。
+![Class structure](docs/figures/class_structure.drawio.png) 
+
 
 # 詳細設計
 doxygenで生成したドキュメントを参照のこと。  
-他に参照可能なドキュメントや各クラス備考について下記する。
+ただしCOCOEvaluate.eval_per_image()については下記のフローチャートを参照．
+![eval_per_image flow chart](docs/figures/eval_per_iamge_flow.drawio.png) 
 
 # Requirements
 下記参照

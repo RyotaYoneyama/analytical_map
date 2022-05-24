@@ -26,8 +26,10 @@ def main():
     # p = cocoParams(iou_thresh=0.5, iou_loc=0.2, recall_inter=np.arange(0, 1.01, 0.1), area_rng=[])
     cocoAnal = COCOAnalyzer(args.gt, args.dt,
                             args.result_dir, args.image_dir, p)
-    cocoAnal.evaluate(middle_file='middle_file.json')
-    cocoAnal.calculate(final_file='final_results.json')
+    cocoAnal.evaluate()
+    cocoAnal.dump_middle_file_json('middle_file.json')
+    cocoAnal.calculate()
+    cocoAnal.dump_final_results_json('final_results.json')
     cocoAnal.visualize()
 
 

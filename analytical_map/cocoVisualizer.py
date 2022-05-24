@@ -4,7 +4,7 @@ import os
 import cv2
 
 
-from analytical_map.params import cocoParams
+from analytical_map.params import COCOParams
 from analytical_map.tools.dump_json import dump_final_results_json as _dump_final_results_json
 from analytical_map.tools.draw_chart import *
 
@@ -22,13 +22,17 @@ class COCOVisualizer():
 
         self.cocoGt = None
         self.cocoDt = None
+        self.is_precision_calculated = False
+        self.is_recall_calculated = False
+        self.is_ap_calculated = False
+        self.is_evaluated = False
+
         assert self.read_middle_file(middle_file)
+        assert self.read_result_file(results_file)
 
         self.result_dir = result_dir
         self.image_dir = image_dir
         assert os.path.isdir(self.image_dir)
-
-        assert self.read_result_file(results_file)
 
         # Default variables
         self.type = ['Match', 'LC', 'DC', 'Cls', 'Loc', 'Bkg', 'Miss']
@@ -50,9 +54,9 @@ class COCOVisualizer():
                 cocoGt = COCO(middle_file)
                 _cocoDt = json.load(open(middle_file))['detections']
                 cocoDt = cocoGt.loadRes(_cocoDt)
-                if self.evaluation_check(cocoGt, cocoDt) == False:
+                self.is_evaluated = self.evaluation_check(cocoGt, cocoDt)
+                if self.is_evaluated == False:
                     return False
-
                 self.cocoGt = cocoGt
                 self.cocoDt = cocoDt
                 return True
@@ -87,10 +91,25 @@ class COCOVisualizer():
         if os.path.isfile(result_file):
             self.results = json.load(open(result_file))['results']
             params_dict = json.load(open(result_file))['params']
-            self.params = cocoParams(**params_dict)
+            self.params = COCOParams(**params_dict)
+            self.is_precision_calculated = True
+            self.is_recall_calculated = True
+            self.is_ap_calculated = True
             return True
         else:
             return False
+
+    def visualize(self) -> None:
+        """Viualize the results by drwawing bounding boxes, precision and recall curves, and APs.
+        """
+        if self.is_evaluated:
+            self.draw_bounding_boxes()
+        if self.is_precision_calculated:
+            self.draw_precision_figs()
+        if self.is_recall_calculated:
+            self.draw_recall_figs()
+        if self.is_ap_calculated:
+            self.draw_ap_figs()
 
     def draw_precision_figs(self) -> None:
         """Draw precision figures.
@@ -272,7 +291,4 @@ if __name__ == '__main__':
 
     cocoVis = COCOVisualizer(path_to_middle_file, path_to_results_file,
                              path_to_result_dir, path_to_image_dir)
-    cocoVis.draw_bounding_boxes()
-    cocoVis.draw_precision_figs()
-    cocoVis.draw_recall_figs()
-    cocoVis.draw_ap_figs()
+    cocoVis.visualize()

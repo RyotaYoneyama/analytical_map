@@ -2,20 +2,20 @@ import json
 from dataclasses import asdict
 from typing import List
 from pycocotools.coco import COCO
-from analytical_map.params import cocoParams
+from analytical_map.params import COCOParams
 import collections as cl
 import os
 import copy
 from typing import List
 
 
-def dump_middle_file_json(cocoGt: COCO, cocoDt: COCO, params: cocoParams, result_dir: str, middle_file: str = 'middle_file.json'):
+def dump_middle_file_json(cocoGt: COCO, cocoDt: COCO, params: COCOParams, result_dir: str, middle_file: str = 'middle_file.json'):
     """Dump middle file
 
     Args:
         cocoGt (COCO): COCO ground truth
         cocoDt (COCO): COCO detections
-        params (cocoParams): COCO params
+        params (COCOParams): COCO params
         result_dir (str): Result directory path
         middle_file (str): Middle file name.  Defaults to 'middle_file.json'.
 
@@ -46,12 +46,12 @@ def dump_middle_file_json(cocoGt: COCO, cocoDt: COCO, params: cocoParams, result
     json.dump(js, fw, indent=2)
 
 
-def dump_final_results_json(cocoGt: COCO, params: cocoParams, results: list, result_dir: str, final_file: str = 'final_results.json'):
+def dump_final_results_json(cocoGt: COCO, params: COCOParams, results: list, result_dir: str, final_file: str = 'final_results.json'):
     """Dump final results
 
     Args:
         cocoGt (COCO): COCO ground truth
-        params (cocoParams): COCO params
+        params (COCOParams): COCO params
         results (list): result list
         result_dir (str): Result directory path
         final_file (str, optional): Final result file name. Defaults to 'final_results.json'.

@@ -72,25 +72,25 @@
 <span class="kn">from</span> <span class="nn">nptyping</span> <span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">analytical_map.params</span> <span class="kn">import</span> <span class="n">cocoParams</span>
+<span class="kn">from</span> <span class="nn">analytical_map.params</span> <span class="kn">import</span> <span class="n">COCOParams</span>
 <span class="kn">from</span> <span class="nn">analytical_map.tools.dump_json</span> <span class="kn">import</span> <span class="n">dump_final_results_json</span> <span class="k">as</span> <span class="n">_dump_final_results_json</span>
 <span class="kn">from</span> <span class="nn">analytical_map.tools.draw_chart</span> <span class="kn">import</span> <span class="o">*</span>
 
 
 <div class="viewcode-block" id="COCOCalculator"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoCalculator.COCOCalculator">[docs]</a><span class="k">class</span> <span class="nc">COCOCalculator</span><span class="p">():</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">middle_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">cocoParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">middle_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">COCOParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Init</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            middle_file (str): Path of a middle file</span>
 <span class="sd">            result_dir (str): Path of a result directory</span>
 <span class="sd">            image_dir (str): Path of an image directory</span>
-<span class="sd">            params (cocoParams): Params for calculations</span>
+<span class="sd">            params (COCOParams): Params for calculations</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cocoGt</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cocoDt</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_coco</span><span class="p">(</span><span class="n">middle_file</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_middle_file</span><span class="p">(</span><span class="n">middle_file</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">result_dir</span> <span class="o">=</span> <span class="n">result_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">image_dir</span> <span class="o">=</span> <span class="n">image_dir</span>
@@ -106,12 +106,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_ap_calculated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_precision_calculated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_recall_calculated</span> <span class="o">=</span> <span class="kc">False</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
             <span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">area_all</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="COCOCalculator.init_coco"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoCalculator.COCOCalculator.init_coco">[docs]</a>    <span class="k">def</span> <span class="nf">init_coco</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">middle_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="COCOCalculator.read_middle_file"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoCalculator.COCOCalculator.read_middle_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_middle_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">middle_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialize cocoGt and cocoDt with a midddle file</span>
 
 <span class="sd">        Args:</span>
@@ -125,11 +125,12 @@
                 <span class="n">cocoGt</span> <span class="o">=</span> <span class="n">COCO</span><span class="p">(</span><span class="n">middle_file</span><span class="p">)</span>
                 <span class="n">_cocoDt</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">middle_file</span><span class="p">))[</span><span class="s1">&#39;detections&#39;</span><span class="p">]</span>
                 <span class="n">cocoDt</span> <span class="o">=</span> <span class="n">cocoGt</span><span class="o">.</span><span class="n">loadRes</span><span class="p">(</span><span class="n">_cocoDt</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_check</span><span class="p">(</span><span class="n">cocoGt</span><span class="p">,</span> <span class="n">cocoDt</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_check</span><span class="p">(</span><span class="n">cocoGt</span><span class="p">,</span> <span class="n">cocoDt</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluated</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">False</span>
-
                 <span class="bp">self</span><span class="o">.</span><span class="n">cocoGt</span> <span class="o">=</span> <span class="n">cocoGt</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cocoDt</span> <span class="o">=</span> <span class="n">cocoDt</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cocoGt</span><span class="o">.</span><span class="n">loadCats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cocoGt</span><span class="o">.</span><span class="n">getCatIds</span><span class="p">())</span>
                 <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ERROR:Could not read files&#39;</span><span class="p">)</span>
@@ -152,6 +153,23 @@
         <span class="n">is_evaluated_dts</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="kc">True</span> <span class="k">if</span> <span class="s1">&#39;eval&#39;</span> <span class="ow">in</span> <span class="n">dt</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
                                 <span class="k">else</span> <span class="kc">False</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dts</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">is_evaluated_gts</span> <span class="ow">and</span> <span class="n">is_evaluated_dts</span></div>
+
+<div class="viewcode-block" id="COCOCalculator.calculate"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoCalculator.COCOCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate precisions, recalls, and APs, and dump them as final results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            final_file (str, optional): A name of the final results. Defaults to &#39;final_results.json&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_evaluated</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">precision_calculate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recall_calculate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ap_calculate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_precision_calculated</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_recall_calculated</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ap_calculated</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="COCOCalculator.precision_calculate"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoCalculator.COCOCalculator.precision_calculate">[docs]</a>    <span class="k">def</span> <span class="nf">precision_calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Calculate precision</span>
@@ -329,13 +347,11 @@
     <span class="n">path_to_middle_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_result_dir</span><span class="p">,</span> <span class="s1">&#39;middle_file.json&#39;</span><span class="p">)</span>
     <span class="n">path_to_image_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_coco_dir</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">)</span>
 
-    <span class="n">p</span> <span class="o">=</span> <span class="n">cocoParams</span><span class="p">(</span><span class="n">recall_inter</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">area_rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">COCOParams</span><span class="p">(</span><span class="n">recall_inter</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">area_rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1024</span><span class="p">],</span> <span class="p">[</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">9216</span><span class="p">],</span> <span class="p">[</span><span class="mi">9216</span><span class="p">,</span> <span class="mf">10000000000.0</span><span class="p">]]))</span>
     <span class="n">cocoCalc</span> <span class="o">=</span> <span class="n">COCOCalculator</span><span class="p">(</span><span class="n">path_to_middle_file</span><span class="p">,</span>
                               <span class="n">path_to_result_dir</span><span class="p">,</span> <span class="n">path_to_image_dir</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-    <span class="n">cocoCalc</span><span class="o">.</span><span class="n">precision_calculate</span><span class="p">()</span>
-    <span class="n">cocoCalc</span><span class="o">.</span><span class="n">recall_calculate</span><span class="p">()</span>
-    <span class="n">cocoCalc</span><span class="o">.</span><span class="n">ap_calculate</span><span class="p">()</span>
+    <span class="n">cocoCalc</span><span class="o">.</span><span class="n">calculate</span><span class="p">()</span>
     <span class="n">cocoCalc</span><span class="o">.</span><span class="n">dump_final_results_json</span><span class="p">(</span><span class="n">final_file</span><span class="o">=</span><span class="s1">&#39;final_results.json&#39;</span><span class="p">)</span>
 </pre></div>
 
