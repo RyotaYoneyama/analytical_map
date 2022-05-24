@@ -28,22 +28,22 @@
 # ソースコード
 ディレクトリ階層を下記する。  
 analytical_map  
-├analytical_map : ソースコード
-├-cocoAnalyzer.py：物体検出分析クラス，最上位
-├-cocoEvalutor.py：カウント分類，タイプ分類を行う評価クラス
-├-cocoCalculator.py：上記カウント分類，タイプ分類結果からAP,Precision，Recallを計算するクラス
-├-cocoVisualizer.py：AP，Precision,Recall結果からグラフを作成するクラス
-├-params.py：上記Evaluation, Calculationを行うためのパラメータdataclass
-├-tools：ツール
-├--draw_chart.py：グラフ描画用ツール
-├--dump_json.py：内部データ出力用ツール
-├debug : デバッグ用ツールおよび描画結果
-├docs : sphinx
-├docker : Dockerfile  
-├example:サンプル
-├-minimum_example.py：サンプルコード
-├-data：サンプルデータ
-├-results：サンプル結果
+- analytical_map : ソースコード
+  - cocoAnalyzer.py：物体検出分析クラス，最上位
+  - cocoEvalutor.py：カウント分類，タイプ分類を行う評価クラス
+  - cocoCalculator.py：上記カウント分類，タイプ分類結果からAP,Precision，Recallを計算するクラス
+  - cocoVisualizer.py：AP，Precision,Recall結果からグラフを作成するクラス
+  - params.py：上記Evaluation, Calculationを行うためのパラメータdataclass
+  - tools：ツール
+    - draw_chart.py：グラフ描画用ツール
+    - dump_json.py：内部データ出力用ツール
+- debug : デバッグ用ツールおよび描画結果
+- docs : sphinx
+- docker : Dockerfile  
+- example:サンプル
+  - minimum_example.py：サンプルコード
+  - data：サンプルデータ
+  - results：サンプル結果
 └README.md :   
 
 
@@ -55,7 +55,7 @@ analytical_map
 # 詳細設計
 doxygenで生成したドキュメントを参照のこと。  
 ただしCOCOEvaluate.eval_per_image()については下記のフローチャートを参照．
-![eval_per_image flow chart](docs/figures/eval_per_iamge_flow.drawio.png) 
+![eval_per_image flow chart](docs/figures/eval_per_image_flow.drawio.png) 
 
 # Requirements
 下記参照

@@ -70,8 +70,8 @@ python3 -m analytical_map.cocoVisualizer
 ![Use flow chart](docs/figures/use_flow.drawio.png)
 
 ## Details
-[README_JP](README_JP.md)
-[API](https://ryotayoneyama.github.io/analytical_map/)
+* [README_JP](README_JP.md)
+* [API](https://ryotayoneyama.github.io/analytical_map/)
 
 
 ## Project status
