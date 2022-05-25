@@ -54,7 +54,7 @@ analytical_map
 
 
 # 詳細設計
-doxygenで生成したドキュメントを参照のこと。  
+sphinxで生成した[API](https://ryotayoneyama.github.io/analytical_map/)を参照のこと。  
 ただしCOCOEvaluate.eval_per_image()については下記のフローチャートを参照。
 ![eval_per_image flow chart](docs/figures/eval_per_image_flow.drawio.png) 
 
