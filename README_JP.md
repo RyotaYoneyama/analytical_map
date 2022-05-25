@@ -2,7 +2,7 @@
 本書は、社内の物体検出の評価基準であるmAPを計算するスクリプトである。特に下記の特徴をもつ。
 - mAPを計算する。
 - mAPを物体のバウンディングボックス（BB）ごとに計算する。
-- TP、 FP、FNを6つに分類でき、検出の失敗を分析できる。
+- TP、 FP、FNを｛'Match', 'DC', 'LC', 'Cls', 'Loc', 'Bkg', 'Miss'｝の7つのタイプに分類でき、検出の失敗を分析できる。
 - COCOのフォーマットに準ずることで、新たなデータ構造の学習が少ない。
 ## 背景
 - 物体検出の精度評価としてAverage Presicion (AP) が社内外を含めて広く使われている。
@@ -16,8 +16,11 @@
 * COCOAnalyzerはCOCOEvaluator、 COCOCalculator、 COCOVisualizerの3段構成となっている。
   * COCOEvaluatorでは，バウンディングボックスを分類する。
     * eval:バウンディングボックスの分類は{'TP', 'FP'，'FN'}のカウント分類と，それらを細分化した｛'Match', 'DC', 'LC', 'Cls', 'Loc', 'Bkg', 'Miss'｝のタイプに分類する。
+    * タイプの優先順位は　'Match'>'DC'=LC'>Cls'>'Loc'>'Bkg'='Miss'とする。
+    * 同タイプでの優先順位はscore順とする。
     * 上記分類を中間ファイル（Middle file）として出力する。
   * COCOCalculatorでは上記中間ファイルをもとに，タイプごとのAP、Precision、Recallを計算し最終結果（Final result）を出力する。
+    * APの計算方法はPascal VOCを基本とする。
   * COCOVisualizerでは上記最終結果をもとにグラフ，バウンディングボックス付き画像を出力する。
  
 # 参考資料
