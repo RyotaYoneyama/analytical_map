@@ -29,7 +29,7 @@ docker run --rm -it --privileged --net=host --ipc=host \
     -e DOCKER_USER_GROUP_ID=$(id -g) \
     analytical_map bash
 
-cd analytical_map bash
+cd analytical_map
 ```
 
 ## Usage
@@ -76,6 +76,14 @@ python3 -m analytical_map.cocoVisualizer
 * [API](https://ryotayoneyama.github.io/analytical_map/)
 
 
+
+## Requirements
+- pycocotools==2.0.4
+- numpy
+- opencv-python
+- nptyping
+- matplotlib
+  
 ## TODO
 * [ ] Replacing matplotlib with bokeh.
 * [ ] Draw AP in respect to object positions.
