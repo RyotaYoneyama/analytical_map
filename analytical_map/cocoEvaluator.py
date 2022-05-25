@@ -127,26 +127,27 @@ class COCOEvaluator():
                 iou = self.iou_per_single_gt(bb_gt, bb_dts)
 
                 # Match boolean for all categories.
-                Match_all_cat_boolean = iou > iou_thresh
-                # Match and Loc for all categories.
-                Match_loc_all_cat_boolean = iou > iou_loc
+                bool_iou_all = iou >= iou_thresh
+                # Loc boolean for all categories.
+                bool_loc_all = np.logical_and(
+                    iou >= iou_loc, iou < iou_thresh)
 
-                # Category match boolean. cat_match_boolean:np.array(NUM_DTS)
+                # Category match boolean. bool_cat_all:np.array(NUM_DTS)
                 cat_gt = np.array(gt['category_id'])
                 cat_dts = np.array([dt['category_id'] for dt in dts])
-                cat_match_boolean = cat_dts == cat_gt
+                bool_cat_all = cat_dts == cat_gt
 
                 # Matched ids
                 Match_boolean = np.logical_and(
-                    cat_match_boolean, Match_all_cat_boolean)
+                    bool_cat_all, bool_iou_all)
 
-                # Only loc ids
+                # loc ids
                 Loc_boolean = np.logical_and(
-                    Match_loc_all_cat_boolean, cat_match_boolean, np.logical_not(Match_boolean))
+                    bool_loc_all, bool_cat_all)
 
-                # Only class ids
+                # Category match ids
                 Cat_boolean = np.logical_and(
-                    Match_all_cat_boolean, np.logical_not(Match_boolean))
+                    bool_iou_all, np.logical_not(Match_boolean))
 
                 # Match, DC, FC
                 id_dets_match = np.where(Match_boolean == True)[0]

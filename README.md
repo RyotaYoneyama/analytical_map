@@ -71,8 +71,17 @@ python3 -m analytical_map.cocoVisualizer
 
 ## Details
 * [README_JP](README_JP.md)
+* [Class structure](docs/figures/class_structure.drawio.png) 
+* [eval_per_image flow chart](docs/figures/eval_per_image_flow.drawio.png) 
 * [API](https://ryotayoneyama.github.io/analytical_map/)
 
+
+## TODO
+* [ ] Replacing matplotlib with bokeh.
+* [ ] Draw AP in respect to object positions.
+* [ ] Draw time-precision, time-recall graphes.
+* [ ] Evaluate this pkg with another map tools.
+* [ ] Pip
 
 ## Project status
 In progress
