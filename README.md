@@ -90,6 +90,7 @@ python3 -m analytical_map.cocoVisualizer
 * [ ] Draw time-precision, time-recall graphes.
 * [ ] Evaluate this pkg with another map tools.
 * [ ] Pip
+* [ ] Added some cool figures on top.
 
 ## Project status
 In progress
