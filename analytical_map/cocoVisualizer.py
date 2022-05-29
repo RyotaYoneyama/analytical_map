@@ -2,7 +2,10 @@ import json
 from pycocotools.coco import COCO
 import os
 import cv2
-
+from bokeh.io import save, output_file, export_png
+from bokeh.plotting import figure, show
+from bokeh.layouts import gridplot
+import copy
 
 from analytical_map.params import COCOParams
 from analytical_map.tools.dump_json import dump_final_results_json as _dump_final_results_json
@@ -118,22 +121,22 @@ class COCOVisualizer():
         precisions = self.results['precision']
 
         dir_fig_precision = os.path.join(
-            self.result_dir, 'figures', 'precision')
-        img_lists = []
-        for pres in precisions:
+            self.result_dir, 'figures/precision')
+        os.makedirs(dir_fig_precision, exist_ok=True)
+        precision_lists = []
+        for prec in precisions:
 
             # save each charts
-            fig_title = pres['category'] + "_precision_ratio"
+            fig_title = prec['category'] + "_precision_ratio"
 
-            _ratio = {k: v for k, v in pres['ratio'].items() if v != 0}
+            p = draw_pi_chart(fig_title,
+                              prec['ratio'].values(), prec['ratio'].keys())
+            precision_lists.append(p)
 
-            draw_pi_chart(dir_fig_precision, fig_title,
-                          _ratio.values(), _ratio.keys())
-            img_lists.append(cv2.imread(os.path.join(
-                dir_fig_precision, fig_title + '.png')))
-
-        im_h = cv2.hconcat(img_lists)
-        cv2.imwrite(os.path.join(dir_fig_precision, 'all_precision.png'), im_h)
+        grid_precision = gridplot(
+            [precision_lists])
+        save(grid_precision, os.path.join(
+            dir_fig_precision, 'precision_all.html'))
 
     def draw_recall_figs(self) -> None:
         """Draw recall figures
@@ -141,23 +144,24 @@ class COCOVisualizer():
 
         recalls = self.results['recall']
 
-        dir_fig_precision = os.path.join(
+        dir_fig_recall = os.path.join(
             self.result_dir, 'figures', 'recall')
-        img_lists = []
+        os.makedirs(dir_fig_recall, exist_ok=True)
+
+        recall_lists = []
         for rec in recalls:
 
             # save each charts
             fig_title = rec['category'] + "_precision_ratio"
 
-            _ratio = {k: v for k, v in rec['ratio'].items() if v != 0}
+            p = draw_pi_chart(fig_title,
+                              rec['ratio'].values(), rec['ratio'].keys())
+            recall_lists.append(p)
 
-            draw_pi_chart(dir_fig_precision, fig_title,
-                          _ratio.values(), _ratio.keys())
-            img_lists.append(cv2.imread(os.path.join(
-                dir_fig_precision, fig_title + '.png')))
-
-        im_h = cv2.hconcat(img_lists)
-        cv2.imwrite(os.path.join(dir_fig_precision, 'all_recalls.png'), im_h)
+        grid_recall = gridplot(
+            [recall_lists])
+        save(grid_recall, os.path.join(
+            dir_fig_recall, 'recall_all.html'))
 
     def draw_ap_figs(self) -> None:
         """Draw ap figures
@@ -172,49 +176,34 @@ class COCOVisualizer():
         pr_score_all = []
 
         for ap in aps:
-            dir_fig_ap_each = os.path.join(dir_fig_ap, ap['category'])
             pi_fig_title = ap['category'] + '_' + ap['area'] + "_ap_ratio"
             pr_curve_fig_title = ap['category'] + \
                 '_' + ap['area'] + "_pr_curve"
             pr_score_fig_title = ap['category'] + \
                 '_' + ap['area'] + "_pr_score"
 
-            _ratio = {k: v for k, v in ap['ratio'].items() if v != 0}
-            draw_pi_chart(dir_fig_ap_each, pi_fig_title,
-                          _ratio.values(), _ratio.keys())
+            # _ratio = {k: v for k, v in ap['ratio'].items() if v != 0}
+            p = draw_pi_chart(pi_fig_title,
+                              ap['ratio'].values(), ap['ratio'].keys())
+            pi_lists_all.append(p)
 
-            draw_pr_score(dir_fig_ap_each, pr_score_fig_title,
-                          ap['score'], ap['prec_raw'], ap['recall_raw'])
+            p = draw_pr_score(pr_score_fig_title,
+                              ap['score'], ap['prec_raw'], ap['recall_raw'])
+            pr_score_all.append(p)
 
-            draw_pr_curve(dir_fig_ap_each, pr_curve_fig_title,
-                          ap['recall_raw'], ap['prec_raw'], self.params.recall_inter, ap['prec_inter'])
+            p = draw_pr_curve(pr_curve_fig_title,
+                              ap['recall_raw'], ap['prec_raw'], self.params.recall_inter, ap['prec_inter'])
+            pr_curve_all.append(p)
 
-            pi_lists_all.append(cv2.imread(os.path.join(
-                dir_fig_ap_each, pi_fig_title + '.png')))
-
-            pr_curve_all.append(cv2.imread(os.path.join(
-                dir_fig_ap_each, pr_curve_fig_title + '.png')))
-
-            pr_score_all.append(cv2.imread(os.path.join(
-                dir_fig_ap_each, pr_score_fig_title + '.png')))
-
-        pi_lists_all = convert_1d_to_2d(
-            pi_lists_all, len(self.params.area_rng))
-        pr_curve_all = convert_1d_to_2d(
-            pr_curve_all, len(self.params.area_rng))
-        pr_score_all = convert_1d_to_2d(
-            pr_score_all, len(self.params.area_rng))
-
-        pi_imgs = concat_tile(pi_lists_all)
-        pr_curve_imgs = concat_tile(pr_curve_all)
-        pr_score_imgs = concat_tile(pr_score_all)
-
-        cv2.imwrite(os.path.join(dir_fig_ap,
-                                 'all_ap_ratio.png'), pi_imgs)
-        cv2.imwrite(os.path.join(dir_fig_ap,
-                                 'all_pr_curve.png'), pr_curve_imgs)
-        cv2.imwrite(os.path.join(dir_fig_ap,
-                                 'all_pr_score.png'), pr_score_imgs)
+        grid_pi_all = gridplot(
+            pi_lists_all, ncols=len(self.params.area_rng))
+        save(grid_pi_all, os.path.join(dir_fig_ap, 'ap_ratio_all.html'))
+        grid_pr_score_all = gridplot(
+            pr_score_all, ncols=len(self.params.area_rng))
+        save(grid_pr_score_all, os.path.join(dir_fig_ap, 'pr_score_all.html'))
+        grid_pr_curve_all = gridplot(
+            pr_curve_all, ncols=len(self.params.area_rng))
+        save(grid_pr_curve_all, os.path.join(dir_fig_ap, 'pr_curve_all.html'))
 
     def draw_bounding_boxes(self) -> None:
         """Visualize all bounding boxes and types in images.
