@@ -1,4 +1,5 @@
 # analytical_map
+![test](docs/figures/ap_ratio_example.png)
 
 Calculate mAP in respect to categories, boounding box size.
 
@@ -56,7 +57,6 @@ Visualize the final results and middle file in 'example/results/figures' and 'ex
 ```
 python3 -m analytical_map.cocoVisualizer
 ```
-
 
 ### Evaluate & Analyze & Visualize
 If you would like to execute the above two steps, you can run them by follwoings:

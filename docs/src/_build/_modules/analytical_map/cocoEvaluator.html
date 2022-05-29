@@ -193,26 +193,27 @@
                 <span class="n">iou</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iou_per_single_gt</span><span class="p">(</span><span class="n">bb_gt</span><span class="p">,</span> <span class="n">bb_dts</span><span class="p">)</span>
 
                 <span class="c1"># Match boolean for all categories.</span>
-                <span class="n">Match_all_cat_boolean</span> <span class="o">=</span> <span class="n">iou</span> <span class="o">&gt;</span> <span class="n">iou_thresh</span>
-                <span class="c1"># Match and Loc for all categories.</span>
-                <span class="n">Match_loc_all_cat_boolean</span> <span class="o">=</span> <span class="n">iou</span> <span class="o">&gt;</span> <span class="n">iou_loc</span>
+                <span class="n">bool_iou_all</span> <span class="o">=</span> <span class="n">iou</span> <span class="o">&gt;=</span> <span class="n">iou_thresh</span>
+                <span class="c1"># Loc boolean for all categories.</span>
+                <span class="n">bool_loc_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                    <span class="n">iou</span> <span class="o">&gt;=</span> <span class="n">iou_loc</span><span class="p">,</span> <span class="n">iou</span> <span class="o">&lt;</span> <span class="n">iou_thresh</span><span class="p">)</span>
 
-                <span class="c1"># Category match boolean. cat_match_boolean:np.array(NUM_DTS)</span>
+                <span class="c1"># Category match boolean. bool_cat_all:np.array(NUM_DTS)</span>
                 <span class="n">cat_gt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gt</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">])</span>
                 <span class="n">cat_dts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dt</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dts</span><span class="p">])</span>
-                <span class="n">cat_match_boolean</span> <span class="o">=</span> <span class="n">cat_dts</span> <span class="o">==</span> <span class="n">cat_gt</span>
+                <span class="n">bool_cat_all</span> <span class="o">=</span> <span class="n">cat_dts</span> <span class="o">==</span> <span class="n">cat_gt</span>
 
                 <span class="c1"># Matched ids</span>
                 <span class="n">Match_boolean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-                    <span class="n">cat_match_boolean</span><span class="p">,</span> <span class="n">Match_all_cat_boolean</span><span class="p">)</span>
+                    <span class="n">bool_cat_all</span><span class="p">,</span> <span class="n">bool_iou_all</span><span class="p">)</span>
 
-                <span class="c1"># Only loc ids</span>
+                <span class="c1"># loc ids</span>
                 <span class="n">Loc_boolean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-                    <span class="n">Match_loc_all_cat_boolean</span><span class="p">,</span> <span class="n">cat_match_boolean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">Match_boolean</span><span class="p">))</span>
+                    <span class="n">bool_loc_all</span><span class="p">,</span> <span class="n">bool_cat_all</span><span class="p">)</span>
 
-                <span class="c1"># Only class ids</span>
+                <span class="c1"># Category match ids</span>
                 <span class="n">Cat_boolean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-                    <span class="n">Match_all_cat_boolean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">Match_boolean</span><span class="p">))</span>
+                    <span class="n">bool_iou_all</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">Match_boolean</span><span class="p">))</span>
 
                 <span class="c1"># Match, DC, FC</span>
                 <span class="n">id_dets_match</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Match_boolean</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -236,8 +237,8 @@
                                 <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;FN&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;LC&quot;</span><span class="p">,</span> <span class="s2">&quot;corr_id&quot;</span><span class="p">:</span> <span class="n">dts</span><span class="p">[</span><span class="n">id_dets_match</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="s1">&#39;iou&#39;</span><span class="p">:</span> <span class="n">iou</span><span class="p">[</span><span class="n">id_det</span><span class="p">]}</span>
 
                 <span class="c1"># Cls</span>
-                <span class="n">id_dets_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Cat_boolean</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">id_det</span> <span class="ow">in</span> <span class="n">id_dets_all</span><span class="p">:</span>
+                <span class="n">id_dets_cat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Cat_boolean</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">id_det</span> <span class="ow">in</span> <span class="n">id_dets_cat</span><span class="p">:</span>
                     <span class="n">dt</span> <span class="o">=</span> <span class="n">dts</span><span class="p">[</span><span class="n">id_det</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">type_order</span><span class="p">[</span><span class="n">dt</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="n">type_order</span><span class="p">[</span><span class="s1">&#39;Cls&#39;</span><span class="p">]:</span>
                         <span class="n">dt</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;FP&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Cls&quot;</span><span class="p">,</span>

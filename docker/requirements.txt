@@ -2,3 +2,4 @@ pycocotools==2.0.4
 numpy
 opencv-python
 nptyping
+bokeh

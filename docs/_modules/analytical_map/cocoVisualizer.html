@@ -68,7 +68,10 @@
 <span class="kn">from</span> <span class="nn">pycocotools.coco</span> <span class="kn">import</span> <span class="n">COCO</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">cv2</span>
-
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">save</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">export_png</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">gridplot</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 
 <span class="kn">from</span> <span class="nn">analytical_map.params</span> <span class="kn">import</span> <span class="n">COCOParams</span>
 <span class="kn">from</span> <span class="nn">analytical_map.tools.dump_json</span> <span class="kn">import</span> <span class="n">dump_final_results_json</span> <span class="k">as</span> <span class="n">_dump_final_results_json</span>
@@ -184,22 +187,22 @@
         <span class="n">precisions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;precision&#39;</span><span class="p">]</span>
 
         <span class="n">dir_fig_precision</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
-        <span class="n">img_lists</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">pres</span> <span class="ow">in</span> <span class="n">precisions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="s1">&#39;figures/precision&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_fig_precision</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">precision_lists</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">prec</span> <span class="ow">in</span> <span class="n">precisions</span><span class="p">:</span>
 
             <span class="c1"># save each charts</span>
-            <span class="n">fig_title</span> <span class="o">=</span> <span class="n">pres</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_precision_ratio&quot;</span>
+            <span class="n">fig_title</span> <span class="o">=</span> <span class="n">prec</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_precision_ratio&quot;</span>
 
-            <span class="n">_ratio</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pres</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">draw_pi_chart</span><span class="p">(</span><span class="n">fig_title</span><span class="p">,</span>
+                              <span class="n">prec</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">prec</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">precision_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-            <span class="n">draw_pi_chart</span><span class="p">(</span><span class="n">dir_fig_precision</span><span class="p">,</span> <span class="n">fig_title</span><span class="p">,</span>
-                          <span class="n">_ratio</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">_ratio</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="n">img_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">dir_fig_precision</span><span class="p">,</span> <span class="n">fig_title</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)))</span>
-
-        <span class="n">im_h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">hconcat</span><span class="p">(</span><span class="n">img_lists</span><span class="p">)</span>
-        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_precision</span><span class="p">,</span> <span class="s1">&#39;all_precision.png&#39;</span><span class="p">),</span> <span class="n">im_h</span><span class="p">)</span></div>
+        <span class="n">grid_precision</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">precision_lists</span><span class="p">])</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">grid_precision</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">dir_fig_precision</span><span class="p">,</span> <span class="s1">&#39;precision_all.html&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="COCOVisualizer.draw_recall_figs"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoVisualizer.COCOVisualizer.draw_recall_figs">[docs]</a>    <span class="k">def</span> <span class="nf">draw_recall_figs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Draw recall figures</span>
@@ -207,23 +210,24 @@
 
         <span class="n">recalls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;recall&#39;</span><span class="p">]</span>
 
-        <span class="n">dir_fig_precision</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">dir_fig_recall</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">,</span> <span class="s1">&#39;recall&#39;</span><span class="p">)</span>
-        <span class="n">img_lists</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_fig_recall</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">recall_lists</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">recalls</span><span class="p">:</span>
 
             <span class="c1"># save each charts</span>
             <span class="n">fig_title</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_precision_ratio&quot;</span>
 
-            <span class="n">_ratio</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">draw_pi_chart</span><span class="p">(</span><span class="n">fig_title</span><span class="p">,</span>
+                              <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">recall_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-            <span class="n">draw_pi_chart</span><span class="p">(</span><span class="n">dir_fig_precision</span><span class="p">,</span> <span class="n">fig_title</span><span class="p">,</span>
-                          <span class="n">_ratio</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">_ratio</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="n">img_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">dir_fig_precision</span><span class="p">,</span> <span class="n">fig_title</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)))</span>
-
-        <span class="n">im_h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">hconcat</span><span class="p">(</span><span class="n">img_lists</span><span class="p">)</span>
-        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_precision</span><span class="p">,</span> <span class="s1">&#39;all_recalls.png&#39;</span><span class="p">),</span> <span class="n">im_h</span><span class="p">)</span></div>
+        <span class="n">grid_recall</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">recall_lists</span><span class="p">])</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">grid_recall</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">dir_fig_recall</span><span class="p">,</span> <span class="s1">&#39;recall_all.html&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="COCOVisualizer.draw_ap_figs"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoVisualizer.COCOVisualizer.draw_ap_figs">[docs]</a>    <span class="k">def</span> <span class="nf">draw_ap_figs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Draw ap figures</span>
@@ -238,49 +242,34 @@
         <span class="n">pr_score_all</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">ap</span> <span class="ow">in</span> <span class="n">aps</span><span class="p">:</span>
-            <span class="n">dir_fig_ap_each</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_ap</span><span class="p">,</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">])</span>
             <span class="n">pi_fig_title</span> <span class="o">=</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_ap_ratio&quot;</span>
             <span class="n">pr_curve_fig_title</span> <span class="o">=</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">+</span> \
                 <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_pr_curve&quot;</span>
             <span class="n">pr_score_fig_title</span> <span class="o">=</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">+</span> \
                 <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_pr_score&quot;</span>
 
-            <span class="n">_ratio</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">}</span>
-            <span class="n">draw_pi_chart</span><span class="p">(</span><span class="n">dir_fig_ap_each</span><span class="p">,</span> <span class="n">pi_fig_title</span><span class="p">,</span>
-                          <span class="n">_ratio</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">_ratio</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="c1"># _ratio = {k: v for k, v in ap[&#39;ratio&#39;].items() if v != 0}</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">draw_pi_chart</span><span class="p">(</span><span class="n">pi_fig_title</span><span class="p">,</span>
+                              <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">pi_lists_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-            <span class="n">draw_pr_score</span><span class="p">(</span><span class="n">dir_fig_ap_each</span><span class="p">,</span> <span class="n">pr_score_fig_title</span><span class="p">,</span>
-                          <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">],</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;prec_raw&#39;</span><span class="p">],</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;recall_raw&#39;</span><span class="p">])</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">draw_pr_score</span><span class="p">(</span><span class="n">pr_score_fig_title</span><span class="p">,</span>
+                              <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">],</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;prec_raw&#39;</span><span class="p">],</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;recall_raw&#39;</span><span class="p">])</span>
+            <span class="n">pr_score_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-            <span class="n">draw_pr_curve</span><span class="p">(</span><span class="n">dir_fig_ap_each</span><span class="p">,</span> <span class="n">pr_curve_fig_title</span><span class="p">,</span>
-                          <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;recall_raw&#39;</span><span class="p">],</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;prec_raw&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">recall_inter</span><span class="p">,</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;prec_inter&#39;</span><span class="p">])</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">draw_pr_curve</span><span class="p">(</span><span class="n">pr_curve_fig_title</span><span class="p">,</span>
+                              <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;recall_raw&#39;</span><span class="p">],</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;prec_raw&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">recall_inter</span><span class="p">,</span> <span class="n">ap</span><span class="p">[</span><span class="s1">&#39;prec_inter&#39;</span><span class="p">])</span>
+            <span class="n">pr_curve_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
-            <span class="n">pi_lists_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">dir_fig_ap_each</span><span class="p">,</span> <span class="n">pi_fig_title</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)))</span>
-
-            <span class="n">pr_curve_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">dir_fig_ap_each</span><span class="p">,</span> <span class="n">pr_curve_fig_title</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)))</span>
-
-            <span class="n">pr_score_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">dir_fig_ap_each</span><span class="p">,</span> <span class="n">pr_score_fig_title</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">)))</span>
-
-        <span class="n">pi_lists_all</span> <span class="o">=</span> <span class="n">convert_1d_to_2d</span><span class="p">(</span>
-            <span class="n">pi_lists_all</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">))</span>
-        <span class="n">pr_curve_all</span> <span class="o">=</span> <span class="n">convert_1d_to_2d</span><span class="p">(</span>
-            <span class="n">pr_curve_all</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">))</span>
-        <span class="n">pr_score_all</span> <span class="o">=</span> <span class="n">convert_1d_to_2d</span><span class="p">(</span>
-            <span class="n">pr_score_all</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">))</span>
-
-        <span class="n">pi_imgs</span> <span class="o">=</span> <span class="n">concat_tile</span><span class="p">(</span><span class="n">pi_lists_all</span><span class="p">)</span>
-        <span class="n">pr_curve_imgs</span> <span class="o">=</span> <span class="n">concat_tile</span><span class="p">(</span><span class="n">pr_curve_all</span><span class="p">)</span>
-        <span class="n">pr_score_imgs</span> <span class="o">=</span> <span class="n">concat_tile</span><span class="p">(</span><span class="n">pr_score_all</span><span class="p">)</span>
-
-        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_ap</span><span class="p">,</span>
-                                 <span class="s1">&#39;all_ap_ratio.png&#39;</span><span class="p">),</span> <span class="n">pi_imgs</span><span class="p">)</span>
-        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_ap</span><span class="p">,</span>
-                                 <span class="s1">&#39;all_pr_curve.png&#39;</span><span class="p">),</span> <span class="n">pr_curve_imgs</span><span class="p">)</span>
-        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_ap</span><span class="p">,</span>
-                                 <span class="s1">&#39;all_pr_score.png&#39;</span><span class="p">),</span> <span class="n">pr_score_imgs</span><span class="p">)</span></div>
+        <span class="n">grid_pi_all</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">(</span>
+            <span class="n">pi_lists_all</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">))</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">grid_pi_all</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_ap</span><span class="p">,</span> <span class="s1">&#39;ap_ratio_all.html&#39;</span><span class="p">))</span>
+        <span class="n">grid_pr_score_all</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">(</span>
+            <span class="n">pr_score_all</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">))</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">grid_pr_score_all</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_ap</span><span class="p">,</span> <span class="s1">&#39;pr_score_all.html&#39;</span><span class="p">))</span>
+        <span class="n">grid_pr_curve_all</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">(</span>
+            <span class="n">pr_curve_all</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">))</span>
+        <span class="n">save</span><span class="p">(</span><span class="n">grid_pr_curve_all</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_fig_ap</span><span class="p">,</span> <span class="s1">&#39;pr_curve_all.html&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="COCOVisualizer.draw_bounding_boxes"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoVisualizer.COCOVisualizer.draw_bounding_boxes">[docs]</a>    <span class="k">def</span> <span class="nf">draw_bounding_boxes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Visualize all bounding boxes and types in images.</span>
