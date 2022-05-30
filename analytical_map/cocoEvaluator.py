@@ -2,7 +2,7 @@ from pycocotools.coco import COCO
 import numpy as np
 import os
 from nptyping import NDArray
-
+import copy
 from analytical_map.params import COCOParams
 from analytical_map.tools.dump_json import dump_middle_file_json as _dump_middle_file_json
 
@@ -50,12 +50,16 @@ class COCOEvaluator():
         if cocoGt_file is not None and cocoDt_file is not None:
             if os.path.isfile(cocoGt_file) and os.path.isfile(cocoDt_file):
                 cocoGt = COCO(cocoGt_file)
-                cocoDt = cocoGt.loadRes(cocoDt_file)
+                _cocoDt = cocoGt.loadRes(cocoDt_file)
+                dts_tmp = [dt for dt in _cocoDt.dataset['annotations']
+                           if dt['score'] >= self.params.score_thresh]  # remove low scores
+                cocoDt = cocoGt.loadRes(dts_tmp)
 
                 eval_dict = {'eval': {'count': None,
                                       'type': None, 'corr_id': None, 'iou': None}}
                 _gts = cocoGt.loadAnns(cocoGt.getAnnIds())
                 _dts = cocoDt.loadAnns(cocoDt.getAnnIds())
+                # print(_dts)
                 _ = [g.update(eval_dict) for g in _gts]
                 _ = [d.update(eval_dict) for d in _dts]
                 self.cocoGt = cocoGt
@@ -193,7 +197,7 @@ class COCOEvaluator():
                                       "corr_id": dt['id'], 'iou': iou[id_det]}
 
                 # No match
-                if type_order[gt['eval']['type']] > type_order[None]:
+                if type_order[gt['eval']['type']] >= type_order[None]:
                     gt['eval'] = {"count": "FN", "type": "Miss",
                                   "corr_id": None, 'iou': None}
 

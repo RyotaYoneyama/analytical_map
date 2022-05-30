@@ -489,6 +489,7 @@
   ],
   "params": {
     "iou_thresh": 0.5,
+    "score_thresh": 0.0001,
     "iou_loc": 0.2,
     "recall_inter": [
       0.0,

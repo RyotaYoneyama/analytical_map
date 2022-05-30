@@ -71,7 +71,8 @@
 <span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="kn">import</span> <span class="n">save</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">export_png</span>
 <span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
 <span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="kn">import</span> <span class="n">gridplot</span>
-<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
 <span class="kn">from</span> <span class="nn">analytical_map.params</span> <span class="kn">import</span> <span class="n">COCOParams</span>
 <span class="kn">from</span> <span class="nn">analytical_map.tools.dump_json</span> <span class="kn">import</span> <span class="n">dump_final_results_json</span> <span class="k">as</span> <span class="n">_dump_final_results_json</span>
@@ -175,8 +176,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">draw_bounding_boxes</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_precision_calculated</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">draw_precision_figs</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pairplot</span><span class="p">(</span><span class="n">prec_or_recall</span><span class="o">=</span><span class="s1">&#39;precision&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_recall_calculated</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">draw_recall_figs</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pairplot</span><span class="p">(</span><span class="n">prec_or_recall</span><span class="o">=</span><span class="s1">&#39;recall&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ap_calculated</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">draw_ap_figs</span><span class="p">()</span></div>
 
@@ -316,7 +319,6 @@
             <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dts_per_img</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">dt</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;TP&#39;</span><span class="p">:</span>
                     <span class="n">is_all_TPs</span> <span class="o">=</span> <span class="kc">False</span>
-
                 <span class="n">x_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="s2">&quot;bbox&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">y_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="s2">&quot;bbox&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
                 <span class="n">x_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="s2">&quot;bbox&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="s2">&quot;bbox&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
@@ -333,7 +335,39 @@
                             <span class="n">lineType</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">LINE_4</span><span class="p">)</span>
 
             <span class="n">save_dir</span> <span class="o">=</span> <span class="n">dir_TP</span> <span class="k">if</span> <span class="n">is_all_TPs</span> <span class="k">else</span> <span class="n">dir_not_TP</span>
-            <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">img</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">]),</span> <span class="n">img_cv2</span><span class="p">)</span></div></div>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">img</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">]),</span> <span class="n">img_cv2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="COCOVisualizer.pairplot"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoVisualizer.COCOVisualizer.pairplot">[docs]</a>    <span class="k">def</span> <span class="nf">pairplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec_or_recall</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">,</span>
+                                 <span class="n">prec_or_recall</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prec_or_recall</span> <span class="o">==</span> <span class="s1">&#39;precision&#39;</span><span class="p">:</span>
+            <span class="n">obj_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cocoDt</span><span class="o">.</span><span class="n">getAnnIds</span><span class="p">()</span>
+            <span class="n">objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cocoDt</span><span class="o">.</span><span class="n">loadAnns</span><span class="p">(</span><span class="n">obj_ids</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">prec_or_recall</span> <span class="o">==</span> <span class="s1">&#39;recall&#39;</span><span class="p">:</span>
+            <span class="n">obj_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cocoGt</span><span class="o">.</span><span class="n">getAnnIds</span><span class="p">()</span>
+            <span class="n">objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cocoGt</span><span class="o">.</span><span class="n">loadAnns</span><span class="p">(</span><span class="n">obj_ids</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;attributes&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;iscrowd&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;segmentation&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;image_id&#39;</span><span class="p">]</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;iou&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">][</span><span class="s1">&#39;iou&#39;</span><span class="p">]</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;bb_cx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;bb_cy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">objs</span><span class="p">)</span>
+        <span class="n">pg</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">pairplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span>
+                          <span class="n">diag_kind</span><span class="o">=</span><span class="s1">&#39;hist&#39;</span><span class="p">,</span> <span class="n">hue_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="n">pg</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">,</span>
+                                <span class="n">prec_or_recall</span><span class="p">,</span> <span class="s1">&#39;pairplot.png&#39;</span><span class="p">))</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>

@@ -24,6 +24,9 @@ class COCOAnalyzer(COCOEvaluator, COCOCalculator, COCOVisualizer):
             image_dir (str): Image directory path
             params (COCOParams): Parameters for evaluation
         """
+
+        self.params = params
+
         # Input
         self.cocoGt = None
         self.cocoDt = None
@@ -49,8 +52,6 @@ class COCOAnalyzer(COCOEvaluator, COCOCalculator, COCOVisualizer):
         self.is_precision_calculated = False
         self.is_recall_calculated = False
 
-        # User variables
-        self.params = params
         self.params.area_rng = np.insert(
             params.area_rng, 0, self.area_all, axis=0)
 

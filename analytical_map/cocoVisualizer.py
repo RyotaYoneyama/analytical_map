@@ -253,7 +253,6 @@ class COCOVisualizer():
             for dt in dts_per_img:
                 if dt['eval']['count'] != 'TP':
                     is_all_TPs = False
-
                 x_min = int(dt["bbox"][0])
                 y_min = int(dt["bbox"][1])
                 x_max = int(dt["bbox"][0]) + int(dt["bbox"][2])
@@ -289,6 +288,7 @@ class COCOVisualizer():
             del obj['iscrowd']
             del obj['segmentation']
             del obj['id']
+            del obj['image_id']
             obj['count'] = obj['eval']['count']
             obj['type'] = obj['eval']['type']
             obj['iou'] = obj['eval']['iou']
@@ -298,7 +298,8 @@ class COCOVisualizer():
             del obj['eval']
 
         df = pd.DataFrame(data=objs)
-        pg = sns.pairplot(df, hue='type', hue_order=self.type)
+        pg = sns.pairplot(df, hue='type', kind='scatter',
+                          diag_kind='hist', hue_order=self.type)
         pg.savefig(os.path.join(self.result_dir, 'figures',
                                 prec_or_recall, 'pairplot.png'))
 

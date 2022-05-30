@@ -76,6 +76,8 @@
 <span class="kn">from</span> <span class="nn">analytical_map.cocoVisualizer</span> <span class="kn">import</span> <span class="n">COCOVisualizer</span>
 <span class="kn">from</span> <span class="nn">analytical_map.params</span> <span class="kn">import</span> <span class="n">COCOParams</span>
 
+<span class="kn">import</span> <span class="nn">argparse</span>    <span class="c1"># 1. argparseをインポート</span>
+
 
 <div class="viewcode-block" id="COCOAnalyzer"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoAnalyzer.COCOAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">COCOAnalyzer</span><span class="p">(</span><span class="n">COCOEvaluator</span><span class="p">,</span> <span class="n">COCOCalculator</span><span class="p">,</span> <span class="n">COCOVisualizer</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cocoGt_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cocoDt_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">COCOParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -88,6 +90,9 @@
 <span class="sd">            image_dir (str): Image directory path</span>
 <span class="sd">            params (COCOParams): Parameters for evaluation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+
         <span class="c1"># Input</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cocoGt</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cocoDt</span> <span class="o">=</span> <span class="kc">None</span>
@@ -113,24 +118,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_precision_calculated</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_recall_calculated</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="c1"># User variables</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">area_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
             <span class="n">params</span><span class="o">.</span><span class="n">area_rng</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">area_all</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="argparser"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoAnalyzer.argparser">[docs]</a><span class="k">def</span> <span class="nf">argparser</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;cocoAnalyzer&#39;</span><span class="p">)</span>    <span class="c1"># 2. パーサを作る</span>
+
+<span class="c1"># 3. parser.add_argumentで受け取る引数を追加していく</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;gt&#39;</span><span class="p">)</span>    <span class="c1"># 必須の引数を追加</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;result_dir&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;image_dir&#39;</span><span class="p">)</span>    <span class="c1"># オプション引数（指定しなくても良い引数）を追加</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">args</span></div>
+
+
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../analytical_map.html#analytical_map.cocoAnalyzer.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">path_to_coco_dir</span> <span class="o">=</span> <span class="s2">&quot;example/data/&quot;</span>
-    <span class="n">path_to_result_dir</span> <span class="o">=</span> <span class="s2">&quot;example/results/&quot;</span>
-    <span class="n">path_to_image_dir</span> <span class="o">=</span> <span class="s2">&quot;example/data/images/&quot;</span>
-    <span class="n">path_to_gt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_coco_dir</span><span class="p">,</span> <span class="s1">&#39;coco&#39;</span><span class="p">,</span> <span class="s1">&#39;gt.json&#39;</span><span class="p">)</span>
-    <span class="n">path_to_dt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_coco_dir</span><span class="p">,</span> <span class="s1">&#39;coco&#39;</span><span class="p">,</span> <span class="s1">&#39;dt.json&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">argparser</span><span class="p">()</span>
 
     <span class="n">p</span> <span class="o">=</span> <span class="n">COCOParams</span><span class="p">(</span><span class="n">iou_thresh</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">iou_loc</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">recall_inter</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
         <span class="mi">0</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">area_rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1024</span><span class="p">],</span> <span class="p">[</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">9216</span><span class="p">],</span> <span class="p">[</span><span class="mi">9216</span><span class="p">,</span> <span class="mf">10000000000.0</span><span class="p">]]))</span>
     <span class="c1"># p = cocoParams(iou_thresh=0.5, iou_loc=0.2, recall_inter=np.arange(0, 1.01, 0.1), area_rng=[])</span>
-    <span class="n">cocoAnal</span> <span class="o">=</span> <span class="n">COCOAnalyzer</span><span class="p">(</span><span class="n">path_to_gt</span><span class="p">,</span> <span class="n">path_to_dt</span><span class="p">,</span>
-                            <span class="n">path_to_result_dir</span><span class="p">,</span> <span class="n">path_to_image_dir</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">cocoAnal</span> <span class="o">=</span> <span class="n">COCOAnalyzer</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">gt</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                            <span class="n">args</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">image_dir</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">cocoAnal</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
     <span class="n">cocoAnal</span><span class="o">.</span><span class="n">dump_middle_file_json</span><span class="p">(</span><span class="s1">&#39;middle_file.json&#39;</span><span class="p">)</span>
     <span class="n">cocoAnal</span><span class="o">.</span><span class="n">calculate</span><span class="p">()</span>
