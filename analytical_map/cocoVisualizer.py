@@ -5,7 +5,8 @@ import cv2
 from bokeh.io import save, output_file, export_png
 from bokeh.plotting import figure, show
 from bokeh.layouts import gridplot
-import copy
+import pandas as pd
+import seaborn as sns
 
 from analytical_map.params import COCOParams
 from analytical_map.tools.dump_json import dump_final_results_json as _dump_final_results_json
@@ -109,8 +110,10 @@ class COCOVisualizer():
             self.draw_bounding_boxes()
         if self.is_precision_calculated:
             self.draw_precision_figs()
+            self.pairplot(prec_or_recall='precision')
         if self.is_recall_calculated:
             self.draw_recall_figs()
+            self.pairplot(prec_or_recall='recall')
         if self.is_ap_calculated:
             self.draw_ap_figs()
 
@@ -268,6 +271,36 @@ class COCOVisualizer():
 
             save_dir = dir_TP if is_all_TPs else dir_not_TP
             cv2.imwrite(os.path.join(save_dir, img["file_name"]), img_cv2)
+
+    def pairplot(self, prec_or_recall):
+        os.makedirs(os.path.join(self.result_dir, 'figures',
+                                 prec_or_recall), exist_ok=True)
+        if prec_or_recall == 'precision':
+            obj_ids = self.cocoDt.getAnnIds()
+            objs = self.cocoDt.loadAnns(obj_ids)
+        elif prec_or_recall == 'recall':
+            obj_ids = self.cocoGt.getAnnIds()
+            objs = self.cocoGt.loadAnns(obj_ids)
+        else:
+            return False
+
+        for obj in objs:
+            del obj['attributes']
+            del obj['iscrowd']
+            del obj['segmentation']
+            del obj['id']
+            obj['count'] = obj['eval']['count']
+            obj['type'] = obj['eval']['type']
+            obj['iou'] = obj['eval']['iou']
+            obj['bb_cx'] = obj['bbox'][0] + obj['bbox'][2]/2
+            obj['bb_cy'] = obj['bbox'][1] + obj['bbox'][3]/2
+            del obj['bbox']
+            del obj['eval']
+
+        df = pd.DataFrame(data=objs)
+        pg = sns.pairplot(df, hue='type', hue_order=self.type)
+        pg.savefig(os.path.join(self.result_dir, 'figures',
+                                prec_or_recall, 'pairplot.png'))
 
 
 if __name__ == '__main__':

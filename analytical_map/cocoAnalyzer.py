@@ -10,6 +10,8 @@ from analytical_map.cocoCalculator import COCOCalculator
 from analytical_map.cocoVisualizer import COCOVisualizer
 from analytical_map.params import COCOParams
 
+import argparse    # 1. argparseをインポート
+
 
 class COCOAnalyzer(COCOEvaluator, COCOCalculator, COCOVisualizer):
     def __init__(self, cocoGt_file: str, cocoDt_file: str, result_dir: str, image_dir: str, params: COCOParams) -> None:
@@ -53,18 +55,28 @@ class COCOAnalyzer(COCOEvaluator, COCOCalculator, COCOVisualizer):
             params.area_rng, 0, self.area_all, axis=0)
 
 
+def argparser():
+    parser = argparse.ArgumentParser(
+        description='cocoAnalyzer')    # 2. パーサを作る
+
+# 3. parser.add_argumentで受け取る引数を追加していく
+    parser.add_argument('gt')    # 必須の引数を追加
+    parser.add_argument('dt')
+    parser.add_argument('result_dir')
+    parser.add_argument('image_dir')    # オプション引数（指定しなくても良い引数）を追加
+
+    args = parser.parse_args()
+    return args
+
+
 def main():
-    path_to_coco_dir = "example/data/"
-    path_to_result_dir = "example/results/"
-    path_to_image_dir = "example/data/images/"
-    path_to_gt = os.path.join(path_to_coco_dir, 'coco', 'gt.json')
-    path_to_dt = os.path.join(path_to_coco_dir, 'coco', 'dt.json')
+    args = argparser()
 
     p = COCOParams(iou_thresh=0.5, iou_loc=0.2, recall_inter=np.arange(
         0, 1.01, 0.1), area_rng=np.array([[0, 1024], [1024, 9216], [9216, 10000000000.0]]))
     # p = cocoParams(iou_thresh=0.5, iou_loc=0.2, recall_inter=np.arange(0, 1.01, 0.1), area_rng=[])
-    cocoAnal = COCOAnalyzer(path_to_gt, path_to_dt,
-                            path_to_result_dir, path_to_image_dir, p)
+    cocoAnal = COCOAnalyzer(args.gt, args.dt,
+                            args.result_dir, args.image_dir, p)
     cocoAnal.evaluate()
     cocoAnal.dump_middle_file_json('middle_file.json')
     cocoAnal.calculate()

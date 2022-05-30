@@ -61,7 +61,7 @@ python3 -m analytical_map.cocoVisualizer
 ### Evaluate & Analyze & Visualize
 If you would like to execute the above two steps, you can run them by follwoings:
 ```
-python3 -m analytical_map.cocoAnalyzer
+python3 -m analytical_map.cocoAnalyzer example/data/coco/gt.json example/data/coco/dt.json example/results/ example/data/images/
 ```
 
 ## Use flow chart
@@ -118,6 +118,7 @@ python3 -m analytical_map.cocoAnalyzer
 ~~~
 ### Final results
 Final results is composed of
+~~~
 - params:
   - iou_thresh:IoU threshold
   - iou_loc:IoU threshold for evaluating location error('Loc').
@@ -142,13 +143,14 @@ Final results is composed of
     - prec_raw: Raw data of precision
     - recall_inter: Points of recalls for calculating AP.
     - prec_inter: Modified precision for calculating AP.
-
+~~~
 
 
 ## Directory structures
+~~~
 analytical_map  
 - analytical_map : Source codes
-  - cocoEvalutor.py： Evaluates every images, counts TPs, FPs and FNs, and divide them into {'Match', 'DC', 'LC', 'Cls', 'Loc', 'Bkg', 'Miss'｝.The evaluation is summarized into a middle file.
+  - ocoEvalutor.py： Evaluates every images, counts TPs, FPs and FNs, and divide them into {'Match', 'DC', 'LC', 'Cls', 'Loc', 'Bkg', 'Miss'｝.The evaluation is summarized into a middle file.
   - cocoCalculator.py：From the middle file, calculates AP, precison, and recall. The calculation is summarized into the final results. 
   - cocoVisualizer.py：Visualized the the final results.
   - cocoAnalyzer.py：Inherits COCOEvaluator, COOCCalculator, and COCOVivsualizer, and run them together.
@@ -163,15 +165,15 @@ analytical_map
   - data：Sample data.
   - results：Results
 - README.md : README.md
-
+~~~
 
 
 
 ## Details
 * [README_JP](README_JP.md)
-* [eval_per_image flow chart](docs/figures/eval_per_image_flow.drawio.png) 
 * [API](https://ryotayoneyama.github.io/analytical_map/)
 
+![eval_per_image flow chart](docs/figures/eval_per_image_flow.drawio.png) 
 
 
 ## Requirements
@@ -184,9 +186,7 @@ analytical_map
 ## TODO
 * [x] Replacing matplotlib with bokeh.
 * [ ] Draw AP in respect to object positions.
-* [ ] Draw time-precision, time-recall graphes.
 * [ ] Evaluate this pkg with another mAP tools.
 * [ ] Pip
-* [ ] Added some cool figures on top.
 ## Project status
 In progress
