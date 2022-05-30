@@ -1,10 +1,7 @@
 # analytical_map
 ![test](docs/figures/ap_ratio_example.png)
 
-Calculate mAP in respect to categories, boounding box size.
-
-
-## Requirements
+Calculate mAP in respect to categories, 6 error types, boounding box sizes.
 
 ## Preparation
 - Clone
