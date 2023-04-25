@@ -122,14 +122,22 @@ class COCOCalculator():
                       'Cls': 0, 'Bkg': 0, 'Miss': 0}
             num_dts = len(dts)
 
+            _dts = copy.deepcopy(dts)
+            if category_names[id_cat]=='single_category':
+                for dt in _dts:
+                    if dt['eval']['type'] == 'Cls':
+                        dt['eval']['type'] = 'Match'
+                        dt['eval']['count'] = 'TP'
+
+
             for t in self.type:
                 _count = len(
-                    [dt for dt in dts if dt['eval']['type'] == t])
+                        [dt for dt in _dts if dt['eval']['type'] == t])
                 counts[t] = _count
 
-            precision = round(counts['Match'] / num_dts, 3)
+            precision = round(counts['Match'] / num_dts, 3) if num_dts > 0 else 0
 
-            ratio = {k: round(v / num_dts, 3)
+            ratio = {k: round(v / num_dts if num_dts > 0 else 0, 3)
                      for k, v in counts.items()}
             self.results['precision'].append({
                 'category': category_names[id_cat], 'score': precision, 'ratio': ratio})
@@ -148,19 +156,27 @@ class COCOCalculator():
 
         for id_cat, cat in enumerate(cat_list):
 
+
             gt_ids = self.cocoGt.getAnnIds(catIds=cat)
             gts = self.cocoGt.loadAnns(ids=gt_ids)
             counts = {'Match': 0, 'Loc': 0, 'DC': 0, 'LC': 0,
                       'Cls': 0, 'Bkg': 0, 'Miss': 0}
             num_gts = len(gts)
 
+            _gts = copy.deepcopy(gts)
+            if category_names[id_cat]=='single_category':
+                for gt in _gts:
+                    if gt['eval']['type'] == 'Cls':
+                        gt['eval']['count'] = 'TP'
+                        gt['eval']['type'] = 'Match'
+
             for t in self.type:
                 _count = len(
-                    [gt for gt in gts if gt['eval']['type'] == t])
+                    [gt for gt in _gts if gt['eval']['type'] == t])
                 counts[t] = _count
 
-            recall = round(counts['Match'] / num_gts, 3)
-            ratio = {k: round(v / num_gts, 3)
+            recall = round(counts['Match'] / num_gts, 3) if num_gts > 0 else 0
+            ratio = {k: round(v / num_gts, 3) if num_gts > 0 else 0
                      for k, v in counts.items()}
 
             self.results['recall'].append({
@@ -234,14 +250,27 @@ class COCOCalculator():
                 for t in self.type:
                     _dts = copy.deepcopy(dts)
                     _gts = copy.deepcopy(gts)
+
+                    if category_names[id_cat]!='single_category':
+                        for gt in _gts:
+                            if gt['eval']['type'] == 'Cls':
+                                gt['eval']['count'] = 'TP'
+                                gt['eval']['type'] = 'Match'
+                        for dt in _dts:
+                            if dt['eval']['type'] == 'Cls':
+                                dt['eval']['count'] = 'TP'
+                                dt['eval']['type'] = 'Match'
+                    # Tentatively modify types to to calculate the ratio of AP
                     if t != 'Match':
                         for gt in _gts:
                             if gt['eval']['type'] == t:
                                 gt['eval']['count'] = 'TP'
+                                gt['eval']['type'] = 'Match'
 
                         for dt in _dts:
                             if dt['eval']['type'] == t:
                                 dt['eval']['count'] = 'TP'
+                                dt['eval']['type'] = 'Match'
 
                     score, prec_raw, recall_raw, prec_inter = calc_ap(
                         _gts, _dts, self.params.recall_inter)
@@ -256,7 +285,7 @@ class COCOCalculator():
 
                 ap_ratio = {k: round(v - ap['Match'], 3) if k != 'Match' else round(ap['Match'], 3)
                             for k, v in ap.items()}
-                ap_ratio_normalized = {k: v/sum(ap_ratio.values()) if v != 0 else 0
+                ap_ratio_normalized = {k: v * ( 1 -  ap['Match']) / ( sum(ap_ratio.values()) - ap['Match'] + 0.000001) if k != 'Match' else round(ap['Match'], 3)
                                        for k, v in ap_ratio.items()}
 
                 self.results['ap'].append({
