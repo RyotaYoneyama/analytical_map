@@ -223,6 +223,8 @@ class COCOVisualizer():
 
             img_cv2 = cv2.imread(os.path.join(
                 self.image_dir, img["file_name"]))
+            img_cv2_gt = img_cv2.copy()
+            img_cv2_dt = img_cv2.copy()
             gts_ids = self.cocoGt.getAnnIds(imgIds=img['id'],  iscrowd=None)
             dts_ids = self.cocoDt.getAnnIds(imgIds=img['id'],  iscrowd=None)
 
@@ -240,9 +242,9 @@ class COCOVisualizer():
                 x_max = int(gt["bbox"][0]) + int(gt["bbox"][2])
                 y_max = int(gt["bbox"][1]) + int(gt["bbox"][3])
 
-                cv2.rectangle(img_cv2, (x_min, y_min),
+                cv2.rectangle(img_cv2_gt, (x_min, y_min),
                               (x_max, y_max), self.type_color[gt['eval']['type']], thickness=2)
-                cv2.putText(img_cv2, str(gt['eval']['type']),
+                cv2.putText(img_cv2_gt, str(gt['eval']['type']),
                             org=(x_min, y_min-5),
                             fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                             fontScale=0.5,
@@ -258,18 +260,18 @@ class COCOVisualizer():
                 x_max = int(dt["bbox"][0]) + int(dt["bbox"][2])
                 y_max = int(dt["bbox"][1]) + int(dt["bbox"][3])
 
-                cv2.rectangle(img_cv2, (x_min, y_min), (x_max, y_max), tuple(
+                cv2.rectangle(img_cv2_dt, (x_min, y_min), (x_max, y_max), tuple(
                     [1.3*c for c in self.type_color[dt['eval']['type']]]))
-                cv2.putText(img_cv2,  str(dt['eval']['type']),
+                cv2.putText(img_cv2_dt,  str(dt['eval']['type']),
                             org=(x_min, y_min-5),
                             fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                             fontScale=0.5,
                             color=self.type_color[dt['eval']['type']],
                             thickness=1,
                             lineType=cv2.LINE_4)
-
+            img_cv2_gt_dt = cv2.hconcat([img_cv2_gt, img_cv2_dt])
             save_dir = dir_TP if is_all_TPs else dir_not_TP
-            cv2.imwrite(os.path.join(save_dir, img["file_name"]), img_cv2)
+            cv2.imwrite(os.path.join(save_dir, img["file_name"]), img_cv2_gt_dt)
 
     def pairplot(self, prec_or_recall):
         os.makedirs(os.path.join(self.result_dir, 'figures',
@@ -284,9 +286,12 @@ class COCOVisualizer():
             return False
 
         for obj in objs:
-            del obj['attributes']
-            del obj['iscrowd']
-            del obj['segmentation']
+            if 'attributes' in obj:
+                del obj['attributes']
+            if 'iscrowd' in obj:
+                del obj['iscrowd']
+            if 'segmentation' in obj:
+                del obj['segmentation']
             del obj['id']
             del obj['image_id']
             obj['count'] = obj['eval']['count']
