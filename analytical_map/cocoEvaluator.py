@@ -203,7 +203,7 @@ class COCOEvaluator():
 
             # Bkg, if detections are not assigned yet
             for dt in dts:
-                if type_order[dt['eval']['type']] > type_order[None]:
+                if type_order[dt['eval']['type']] >= type_order[None]:
                     dt['eval'] = {"count": "FP", "type": "Bkg",
                                   "corr_id": None, 'iou': None}
 
